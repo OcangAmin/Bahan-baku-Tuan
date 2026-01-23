@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Daily Stock - Pencatatan Pembelian Bahan Baku</title>
+  <title>Daily Stock - Order Bahan Baku</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -50,12 +50,17 @@
 <body>
 
 <div class="container">
-  <h1>DAILY STOCK - PENCATATAN PEMBELIAN BAHAN BAKU</h1>
+  <h1>DAILY STOCK - Pencatatan Pembelian Bahan Baku</h1>
+
+  <!-- Tanggal Global -->
+  <div style="text-align:center; margin-bottom:15px;">
+    <label for="tglOrder">Tanggal Order: </label>
+    <input type="date" id="tglOrder" />
+  </div>
 
   <table id="stockTable">
     <thead>
       <tr>
-        <th>TGL</th>
         <th>NO</th>
         <th>NAMA BAHAN</th>
         <th>CATEGORY</th>
@@ -69,944 +74,128 @@
     </thead>
     <tbody>
 
-      <!-- LIST BAHAN BAKU -->
-      <!-- 1 -->
+      <!-- Semua bahan baku sesuai list -->
       <tr>
-        <td><input type="date" /></td>
-        <td>1</td>
-        <td>CARAMEL</td>
-        <td>SYRUP</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>1</td><td>CARAMEL</td><td>SYRUP</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 2 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>2</td>
-        <td>VANILLA</td>
-        <td>SYRUP</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 3 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>3</td>
-        <td>BUTTERSCOTCH</td>
-        <td>SYRUP</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 4 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>4</td>
-        <td>PANDAN</td>
-        <td>SYRUP</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 5 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>5</td>
-        <td>GRENADINE</td>
-        <td>SYRUP</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 6 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>6</td>
-        <td>STRAWBERRY</td>
-        <td>SYRUP</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 7 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>7</td>
-        <td>BANANA</td>
-        <td>SYRUP</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 8 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>8</td>
-        <td>MANGGO</td>
-        <td>SYRUP</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 9 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>9</td>
-        <td>MELON</td>
-        <td>SYRUP</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 10 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>10</td>
-        <td>PLUM</td>
-        <td>SYRUP</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 11 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>11</td>
-        <td>TIRAMISU</td>
-        <td>SYRUP</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 12 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>12</td>
-        <td>APEL</td>
-        <td>SYRUP</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 13 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>13</td>
-        <td>YAKULT</td>
-        <td>SYRUP</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 14 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>14</td>
-        <td>FRESH ORANGE</td>
-        <td>SYRUP</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 15 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>15</td>
-        <td>FRESH LYCHEE</td>
-        <td>SYRUP</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 16 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>16</td>
-        <td>VANILLA</td>
-        <td>POWDER</td>
-        <td><input type="text" placeholder="ex: KG" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 17 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>17</td>
-        <td>AVOCADO</td>
-        <td>POWDER</td>
-        <td><input type="text" placeholder="ex: KG" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 18 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>18</td>
-        <td>MATCHA</td>
-        <td>POWDER</td>
-        <td><input type="text" placeholder="ex: KG" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 19 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>19</td>
-        <td>RED VELVET</td>
-        <td>POWDER</td>
-        <td><input type="text" placeholder="ex: KG" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 20 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>20</td>
-        <td>TARO</td>
-        <td>POWDER</td>
-        <td><input type="text" placeholder="ex: KG" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 21 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>21</td>
-        <td>CHEESE CAKE CREAM</td>
-        <td>POWDER</td>
-        <td><input type="text" placeholder="ex: KG" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 22 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>22</td>
-        <td>COKLAT</td>
-        <td>POWDER</td>
-        <td><input type="text" placeholder="ex: KG" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 23 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>23</td>
-        <td>CARAMEL</td>
-        <td>SAUS</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 24 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>24</td>
-        <td>APEL</td>
-        <td>SAUS</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 25 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>25</td>
-        <td>STRAWBERRY</td>
-        <td>SAUS</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 26 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>26</td>
-        <td	>AREN DAINICHI</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 27 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>27</td>
-        <td>UHT</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 28 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>28</td>
-        <td>MAX CREAMER</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 29 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>29</td>
-        <td>SKM</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 30 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>30</td>
-        <td>TISSUE</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 31 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>31</td>
-        <td>EVAP</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 32 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>32</td>
-        <td>PIPET</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 33 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>33</td>
-        <td>TRASH BAG</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 34 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>34</td>
-        <td>KERTAS STRUK</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: RIM" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 35 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>35</td>
-        <td>PLASTER STRUK</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 36 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>36</td>
-        <td>PAPPER CUP</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 37 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>37</td>
-        <td>CUP PUTIH</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 38 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>38</td>
-        <td>CUP ABU</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 39 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>39</td>
-        <td>TUTUP CUP PUTIH</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 40 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>40</td>
-        <td>TUTUP CUP ABU</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 41 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>41</td>
-        <td>GALON CLEO</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 42 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>42</td>
-        <td>MINERAL WATER</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
-
-      <!-- 43 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>43</td>
-        <td>STICK SUGAR</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: BOX" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>2</td><td>VANILLA</td><td>SYRUP</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 44 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>44</td>
-        <td>SUGAR</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: KG" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>3</td><td>BUTTERSCOTCH</td><td>SYRUP</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 45 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>45</td>
-        <td>BUAH LECY</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>4</td><td>PANDAN</td><td>SYRUP</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 46 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>46</td>
-        <td>SUNLIGHT</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>5</td><td>GRENADINE</td><td>SYRUP</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 47 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>47</td>
-        <td>SUPER PELL</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>6</td><td>STRAWBERRY</td><td>SYRUP</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 48 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>48</td>
-        <td>BYGON</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>7</td><td>BANANA</td><td>SYRUP</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 49 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>49</td>
-        <td>PENGHARUM RUANGAN</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>8</td><td>MANGO</td><td>SYRUP</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 50 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>50</td>
-        <td>PORTEX</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>9</td><td>MELON</td><td>SYRUP</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 51 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>51</td>
-        <td>PIRING DONUT</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>10</td><td>PLUM</td><td>SYRUP</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 52 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>52</td>
-        <td>BISKUIT BISCOF</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>11</td><td>TIRAMISU</td><td>SYRUP</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 53 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>53</td>
-        <td>SLY BISCOF</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>12</td><td>APEL</td><td>SYRUP</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 54 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>54</td>
-        <td>THAI TEA</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: KG" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>13</td><td>YAKULT</td><td>SYRUP</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 55 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>55</td>
-        <td>GREEN TEA</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: KG" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>14</td><td>FRESH ORANGE</td><td>SYRUP</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 56 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>56</td>
-        <td>TEH CAP BOTOL</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>15</td><td>FRESH LYCHE</td><td>SYRUP</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 57 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>57</td>
-        <td>TEH GUNUNG EMAS</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: BOTOL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>16</td><td>VANILLA</td><td>POWDER</td><td><input type="text" placeholder="ex: KG" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 58 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>58</td>
-        <td>SKIPPY</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>17</td><td>AVOCADO</td><td>POWDER</td><td><input type="text" placeholder="ex: KG" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 59 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>59</td>
-        <td>SARUNG TANGAN KARET</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: BOX" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>18</td><td>MATCHA</td><td>POWDER</td><td><input type="text" placeholder="ex: KG" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 60 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>60</td>
-        <td>SPIDOL</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>19</td><td>REDVELVET</td><td>POWDER</td><td><input type="text" placeholder="ex: KG" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 61 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>61</td>
-        <td>PULPEN</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>20</td><td>TARO</td><td>POWDER</td><td><input type="text" placeholder="ex: KG" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 62 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>62</td>
-        <td>GALON BIASA</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: PCS" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>21</td><td>CHEESE CAKE CREAM</td><td>POWDER</td><td><input type="text" placeholder="ex: KG" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 63 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>63</td>
-        <td>ES BATU</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: KG" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>22</td><td>COKLAT</td><td>POWDER</td><td><input type="text" placeholder="ex: KG" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 64 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>64</td>
-        <td>PLASTIK TAKE AWAY 1</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: ROLL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>23</td><td>CARAMEL</td><td>SAUS</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 65 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>65</td>
-        <td>PLASTIK TAKE AWAY 2</td>
-        <td>OTHER</td>
-        <td><input type="text" placeholder="ex: ROLL" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>24</td><td>APEL</td><td>SAUS</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
-
-      <!-- 66 -->
       <tr>
-        <td><input type="date" /></td>
-        <td>66</td>
-        <td>BIJI KOPI KAKS</td>
-        <td>BEANS</td>
-        <td><input type="text" placeholder="ex: KG" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
+        <td>25</td><td>STRAWBERRY</td><td>SAUS</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td>
       </tr>
 
-      <!-- 67 -->
-      <tr>
-        <td><input type="date" /></td>
-        <td>67</td>
-        <td>BIJI KOPI DIKS</td>
-        <td>BEANS</td>
-        <td><input type="text" placeholder="ex: KG" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><button class="btn" onclick="addToOrder(this)">ADD TO ORDER</button></td>
-      </tr>
+      <!-- OTHER -->
+      <tr><td>26</td><td>AREN DAINICHI</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>27</td><td>UHT</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>28</td><td>MAX CREAMER</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>29</td><td>SKM</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>30</td><td>TISSUE</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>31</td><td>EVAP</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>32</td><td>PIPET</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>33</td><td>TRASH BAG</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>34</td><td>KERTAS STRUK</td><td>OTHER</td><td><input type="text" placeholder="ex: ROLL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>35</td><td>PLASTER STRUK</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>36</td><td>PAPPER CUP</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>37</td><td>CUP PUTIH</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>38</td><td>CUP ABU</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>39</td><td>TUTUP CUP PUTIH</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>40</td><td>TUTUP CUP ABU</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>41</td><td>GALON CLEO</td><td>OTHER</td><td><input type="text" placeholder="ex: GALON" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>42</td><td>MINERAL WATER</td><td>OTHER</td><td><input type="text" placeholder="ex: GALON" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>43</td><td>STICK SUGAR</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>44</td><td>SUGAR</td><td>OTHER</td><td><input type="text" placeholder="ex: KG" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>45</td><td>BUAH LECY</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>46</td><td>SUNLIGHT</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>47</td><td>SUPER PELL</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>48</td><td>BYGON</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>49</td><td>PENGHARUM RUANGAN</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>50</td><td>PORTEX</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>51</td><td>PIRING DONUT</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>52</td><td>BISKUIT BISCOF</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>53</td><td>SLY BISCOF</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>54</td><td>THAI TEA</td><td>OTHER</td><td><input type="text" placeholder="ex: KG" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>55</td><td>GREEN TEA</td><td>OTHER</td><td><input type="text" placeholder="ex: KG" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>56</td><td>TEH CAP BOTOL</td><td>OTHER</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>57</td><td>TEH GUNUNG EMAS</td><td>OTHER</td><td><input type="text" placeholder="ex: BOTOL" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>58</td><td>SKIPPY</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>59</td><td>SARUNG TANGAN KARET</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>60</td><td>SPIDOL</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>61</td><td>PULPEN</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>62</td><td>GALON BIASA</td><td>OTHER</td><td><input type="text" placeholder="ex: GALON" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>63</td><td>ES BATU</td><td>OTHER</td><td><input type="text" placeholder="ex: KG" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>64</td><td>PLASTIK TAKE AWAY 1</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>65</td><td>PLASTIK TAKE AWAY 2</td><td>OTHER</td><td><input type="text" placeholder="ex: PCS" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+
+      <!-- BEANS -->
+      <tr><td>66</td><td>BIJI KOPI KAKS</td><td>BEANS</td><td><input type="text" placeholder="ex: KG" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
+      <tr><td>67</td><td>BIJI KOPI DIKS</td><td>BEANS</td><td><input type="text" placeholder="ex: KG" /></td><td><input type="text" /></td><td><input type="text" /></td><td><input type="number" /></td><td><input type="number" /></td><td><button class="btn" onclick="addToOrder(this)">Add to Order</button></td></tr>
 
     </tbody>
   </table>
@@ -1018,6 +207,7 @@
     <thead>
       <tr>
         <th>No</th>
+        <th>Tanggal</th>
         <th>Nama Bahan</th>
         <th>Category</th>
         <th>Satuan</th>
@@ -1028,7 +218,7 @@
     <tbody></tbody>
   </table>
 
-  <button class="btn" onclick="exportToCSV()">GENERATE CSV & OPEN WA</button>
+  <button class="btn" onclick="exportToCSV()">Generate CSV & Open WA</button>
 </div>
 
 <script>
@@ -1036,27 +226,30 @@
 
   function addToOrder(btn) {
     const row = btn.parentElement.parentElement;
-    const name = row.cells[2].innerText;
-    const category = row.cells[3].innerText;
-    const satuan = row.cells[4].querySelector('input').value || '-';
+    const name = row.cells[1].innerText;
+    const category = row.cells[2].innerText;
+    const satuan = row.cells[3].querySelector('input').value || '-';
+    const tgl = document.getElementById('tglOrder').value || '-';
 
     const orderTable = document.getElementById('orderTable').getElementsByTagName('tbody')[0];
 
     const newRow = orderTable.insertRow();
     const noCell = newRow.insertCell(0);
-    const nameCell = newRow.insertCell(1);
-    const catCell = newRow.insertCell(2);
-    const satuanCell = newRow.insertCell(3);
-    const qtyCell = newRow.insertCell(4);
-    const actionCell = newRow.insertCell(5);
+    const tglCell = newRow.insertCell(1);
+    const nameCell = newRow.insertCell(2);
+    const catCell = newRow.insertCell(3);
+    const satuanCell = newRow.insertCell(4);
+    const qtyCell = newRow.insertCell(5);
+    const actionCell = newRow.insertCell(6);
 
     noCell.innerText = orderTable.rows.length;
+    tglCell.innerText = tgl;
     nameCell.innerText = name;
     catCell.innerText = category;
     satuanCell.innerText = satuan;
     qtyCell.innerHTML = '<input type="number" placeholder="Jumlah Order" />';
 
-    actionCell.innerHTML = '<button class="btn btn-danger" onclick="removeOrder(this)">REMOVE</button>';
+    actionCell.innerHTML = '<button class="btn btn-danger" onclick="removeOrder(this)">Remove</button>';
   }
 
   function removeOrder(btn) {
@@ -1070,17 +263,18 @@
 
   function exportToCSV() {
     const orderTable = document.getElementById('orderTable').getElementsByTagName('tbody')[0];
-    let csvContent = "No,Nama Bahan,Category,Satuan,Jumlah Order\n";
+    let csvContent = "No,Tanggal,Nama Bahan,Category,Satuan,Jumlah Order\n";
 
     for (let i = 0; i < orderTable.rows.length; i++) {
       const cells = orderTable.rows[i].cells;
-      const qty = cells[4].querySelector('input').value || "0";
+      const qty = cells[5].querySelector('input').value || "0";
 
       csvContent += [
         cells[0].innerText,
         cells[1].innerText,
         cells[2].innerText,
         cells[3].innerText,
+        cells[4].innerText,
         qty
       ].join(",") + "\n";
     }
