@@ -6,644 +6,817 @@
 <title>Daily Stock & Order Bahan Baku</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..800&family=JetBrains+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600&display=swap">
 <style>
-  /* Layout: satu kolom seperti lembar stock opname: kolom header, tab 3 langkah (Stok, Order, Kirim), baris bergaris tipis */
+  /* Pola halaman: Form (wizard) — 1 Hitung stok, 2 Susun order, 3 Kirim.
+     Profil: catalog default (Stripe, WCAG AA, area sentuh 44px). */
   :root {
-    --bg: #EDF1EE;
-    --surface: #FFFFFF;
-    --surface-2: #F4F7F5;
-    --ink: #15221E;
-    --muted: #5B6A64;
-    --line: #D3DBD7;
-    --accent: #0D6A5B;
-    --accent-ink: #FFFFFF;
-    --accent-soft: #DCEEE9;
-    --low: #B2421A;
-    --low-soft: #FBE7DE;
-    --font-display: "Archivo", "Arial Narrow", system-ui, sans-serif;
-    --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    --r: 6px;
+    --vp-narrow: 375px;
+    --vp-medium: 768px;
+    --vp-wide: 1280px;
+    --col-max: 60rem;
+
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-12: 48px;
+
+    --font-ui: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --text-meta: 0.75rem;
+    --text-secondary: 0.875rem;
+    --text-body: 1rem;
+    --text-h2: 1.44rem;
+    --text-h1: 2.074rem;
+    --leading-display: 1.15;
+    --leading-tight: 1.2;
+    --leading-body: 1.55;
+    --leading-secondary: 1.5;
+    --leading-meta: 1.4;
+    --w-regular: 400;
+    --w-medium: 500;
+    --w-semibold: 600;
+
+    --motion-100: 100ms;
+    --motion-150: 150ms;
+    --motion-200: 200ms;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+
+    --hit: 44px;
+    --radius: 8px;
+
+    /* Warna: L0 kanvas, L1 struktur, satu aksen interaktif, merah hanya untuk status kritis dan aksi hapus */
+    --foreground: #16201D;
+    --fg-secondary: #55625D;
+    --surface-l0: #FFFFFF;
+    --surface-l1: #F4F6F5;
+    --surface-l3: #FFFFFF;
+    --border-l1: rgba(22, 32, 29, 0.10);
+    --border-l2: rgba(22, 32, 29, 0.16);
+    --accent: #0B6B5C;
+    --accent-hover: #08594C;
+    --on-accent: #FFFFFF;
+    --danger: #DC2626;
+    --danger-hover: #B91C1C;
+    --on-danger: #FFFFFF;
+    --critical-text: #B42318;
+    --critical-bg: #FEF0EE;
+    --shadow-l2: 0 4px 12px rgba(0, 0, 0, 0.06);
+    --shadow-l3: 0 8px 24px rgba(0, 0, 0, 0.07);
+    --inset-hi: inset 0 0 0 0 transparent;
+    --scrim: rgba(0, 0, 0, 0.5);
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #0E1412;
-      --surface: #161F1C;
-      --surface-2: #1C2724;
-      --ink: #E3EBE7;
-      --muted: #93A29C;
-      --line: #2A3732;
-      --accent: #43B9A3;
-      --accent-ink: #062520;
-      --accent-soft: #163A33;
-      --low: #FF8F63;
-      --low-soft: #3B2016;
+      --foreground: #E4ECE8;
+      --fg-secondary: #A3B1AB;
+      --surface-l0: #0E1311;
+      --surface-l1: #161D1A;
+      --surface-l3: #1B2420;
+      --border-l1: rgba(228, 236, 232, 0.12);
+      --border-l2: rgba(228, 236, 232, 0.18);
+      --accent: #3DBEA6;
+      --accent-hover: #63CDB9;
+      --on-accent: #04201B;
+      --danger: #F87171;
+      --danger-hover: #FCA5A5;
+      --on-danger: #2A0606;
+      --critical-text: #FF9C85;
+      --critical-bg: #3A1A14;
+      --shadow-l2: none;
+      --shadow-l3: none;
+      --inset-hi: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      --scrim: rgba(0, 0, 0, 0.6);
       color-scheme: dark;
     }
   }
 
-  * { box-sizing: border-box; }
+  *, *::before, *::after { box-sizing: border-box; }
   [hidden] { display: none !important; }
+  html, body { margin: 0; }
   body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--font-body);
-    font-size: 15px;
-    line-height: 1.45;
+    background: var(--surface-l0);
+    color: var(--foreground);
+    font-family: var(--font-ui);
+    font-size: var(--text-body);
+    font-weight: var(--w-regular);
+    line-height: var(--leading-body);
+    -webkit-text-size-adjust: 100%;
   }
-  .app {
-    max-width: 1040px;
-    margin: 0 auto;
-    padding-left: max(16px, env(safe-area-inset-left, 0px));
-    padding-right: max(16px, env(safe-area-inset-right, 0px));
-    padding-block: max(20px, env(safe-area-inset-top, 0px)) calc(56px + env(safe-area-inset-bottom, 0px));
-    display: grid;
-    gap: 16px;
-  }
-
-  h1, .eyebrow, .label, .stat-num, .tab, .cat-head {
-    font-family: var(--font-display);
-  }
-  h1 {
-    margin: 0;
-    font-size: clamp(1.6rem, 4.5vw, 2.1rem);
-    font-weight: 780;
-    font-stretch: 112%;
-    letter-spacing: -0.01em;
-    line-height: 1.05;
-    text-wrap: balance;
-  }
-  .eyebrow, .label {
-    margin: 0;
-    font-size: 0.72rem;
-    font-weight: 650;
-    font-stretch: 85%;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--muted);
+  h1, h2, h3 { margin: 0; font-weight: var(--w-semibold); text-wrap: balance; }
+  h1 { font-size: var(--text-h1); line-height: var(--leading-display); letter-spacing: -0.01em; }
+  h2 { font-size: var(--text-h2); line-height: var(--leading-tight); }
+  h3 { font-size: var(--text-body); line-height: var(--leading-tight); }
+  p { margin: 0; }
+  .meta { font-size: var(--text-meta); line-height: var(--leading-meta); color: var(--fg-secondary); }
+  .secondary { font-size: var(--text-secondary); line-height: var(--leading-secondary); color: var(--fg-secondary); }
+  .desc { font-size: var(--text-secondary); line-height: var(--leading-secondary); color: var(--fg-secondary); max-width: 70ch; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
   }
 
-  /* Header */
-  .sheet {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--r);
-    padding: 16px;
-    display: grid;
-    gap: 14px;
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- shell ---------- */
+  .app { width: 100%; min-height: 100vh; display: flex; flex-direction: column; }
+  .col {
+    width: 100%;
+    max-width: var(--col-max);
+    margin-inline: auto;
+    padding-left: max(var(--space-4), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--space-4), env(safe-area-inset-right, 0px));
+  }
+  main { width: 100%; max-width: var(--vp-wide); margin-inline: auto; flex: 1; }
+
+  .page-header {
+    background: var(--surface-l1);
+    border-bottom: 1px solid var(--border-l1);
+    padding-top: max(var(--space-6), env(safe-area-inset-top, 0px));
   }
   .title-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px 16px;
     align-items: flex-end;
     justify-content: space-between;
+    gap: var(--space-4);
   }
-  .title-row > div:first-child { display: grid; gap: 6px; min-width: 0; }
-  .draft {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 12px;
-    align-items: center;
-    font-size: 0.82rem;
-    color: var(--muted);
-  }
-  .fields {
+  .title-row .title { display: grid; gap: var(--space-1); min-width: 0; }
+
+  /* Daftar langkah (1–3 bagian → satu baris di bawah header) */
+  .steps {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 10px 12px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: var(--space-6);
   }
-  .field { display: grid; gap: 4px; }
-
-  input, select {
+  .step {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 56px;
+    padding: var(--space-2) var(--space-2) var(--space-3);
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--fg-secondary);
     font: inherit;
-    color: var(--ink);
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--r);
-    padding: 7px 9px;
-    width: 100%;
+    text-align: left;
+    cursor: pointer;
     min-width: 0;
+    transition: color var(--motion-150) ease, border-color var(--motion-150) ease;
   }
-  input::placeholder { color: var(--muted); opacity: 0.75; }
-  input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible, summary:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 1px;
+  .step:hover { color: var(--foreground); }
+  .step-no {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border-l2);
+    font-size: var(--text-secondary);
+    font-weight: var(--w-semibold);
+    font-variant-numeric: tabular-nums;
   }
-  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .step-text { display: grid; min-width: 0; }
+  .step-name { font-size: var(--text-secondary); font-weight: var(--w-medium); line-height: var(--leading-secondary); white-space: nowrap; }
+  .step-meta { font-size: var(--text-meta); line-height: var(--leading-meta); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .step[aria-current="step"] { color: var(--foreground); border-bottom-color: var(--accent); }
+  .step[aria-current="step"] .step-no { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .name-narrow { display: none; }
 
+  /* ---------- buttons ---------- */
   .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: var(--space-2);
+    min-height: var(--hit);
+    padding: 0 var(--space-4);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-l2);
+    background: var(--surface-l0);
+    color: var(--foreground);
     font: inherit;
-    font-weight: 600;
-    font-size: 0.9rem;
-    padding: 8px 14px;
-    border-radius: var(--r);
-    border: 1px solid var(--line);
-    background: var(--surface);
-    color: var(--ink);
-    cursor: pointer;
+    font-size: var(--text-secondary);
+    font-weight: var(--w-medium);
+    line-height: 1.2;
     text-decoration: none;
     white-space: nowrap;
-  }
-  .btn:hover { border-color: var(--muted); }
-  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-  .btn.primary:hover { filter: brightness(1.08); }
-  .btn.ghost { background: transparent; }
-  .btn.danger { color: var(--low); }
-  .btn.small { font-size: 0.8rem; padding: 5px 9px; }
-  .btn[aria-disabled="true"], .btn:disabled { opacity: 0.45; cursor: not-allowed; filter: none; }
-  .btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
-  .linkbtn {
-    font: inherit; font-weight: 600; color: var(--accent);
-    background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline;
-  }
-
-  .banner {
-    background: var(--accent-soft);
-    border-radius: var(--r);
-    padding: 10px 12px;
-    font-size: 0.9rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 14px;
-    align-items: center;
-  }
-  .confirm {
-    background: var(--surface-2);
-    border: 1px solid var(--line);
-    border-radius: var(--r);
-    padding: 12px;
-    display: grid;
-    gap: 10px;
-    font-size: 0.9rem;
-  }
-  .confirm p { margin: 0; }
-
-  /* Ringkasan */
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1px;
-    background: var(--line);
-    border: 1px solid var(--line);
-    border-radius: var(--r);
-    overflow: hidden;
-  }
-  .stat {
-    background: var(--surface);
-    padding: 10px 12px;
-    display: grid;
-    gap: 2px;
-    min-width: 0;
-  }
-  .stat-num {
-    font-size: 1.45rem;
-    font-weight: 720;
-    font-variant-numeric: tabular-nums;
-    line-height: 1.1;
-  }
-  .stat-label { font-size: 0.8rem; color: var(--muted); }
-  .stat.is-low .stat-num { color: var(--low); }
-
-  /* Tab: urutan langkah, jadi diberi nomor */
-  .tabs {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 4px;
-    padding: 4px;
-    background: var(--surface-2);
-    border: 1px solid var(--line);
-    border-radius: calc(var(--r) + 3px);
-  }
-  .tab {
-    font-size: 0.95rem;
-    font-weight: 650;
-    font-stretch: 95%;
-    border: 0;
-    border-radius: var(--r);
-    background: transparent;
-    color: var(--muted);
-    padding: 9px 6px;
     cursor: pointer;
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    justify-content: center;
-    min-width: 0;
+    transition: background-color var(--motion-150) ease, border-color var(--motion-150) ease, color var(--motion-150) ease;
   }
-  .tab .step {
-    display: inline-grid;
-    place-items: center;
-    width: 1.35rem; height: 1.35rem;
-    border-radius: 50%;
-    border: 1.5px solid currentColor;
-    font-size: 0.75rem;
-    flex: none;
-  }
-  .tab .count {
-    font-family: var(--font-body);
-    font-size: 0.75rem;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    opacity: 0.85;
-  }
-  .tab[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
-  .tab[aria-selected="true"] .step { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .btn:hover { border-color: var(--fg-secondary); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .btn-danger { background: var(--danger); border-color: var(--danger); color: var(--on-danger); }
+  .btn-danger:hover { background: var(--danger-hover); border-color: var(--danger-hover); }
+  .btn-text-danger { color: var(--critical-text); }
+  .btn svg { width: 20px; height: 20px; flex: none; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 
-  .panel { display: grid; gap: 12px; }
-  .toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .toolbar .search { flex: 1 1 220px; max-width: 360px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .chip {
-    font: inherit;
-    font-size: 0.78rem;
-    font-weight: 600;
-    padding: 5px 10px;
-    border-radius: 999px;
-    border: 1px solid var(--line);
-    background: var(--surface);
-    color: var(--muted);
-    cursor: pointer;
-  }
-  .chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
-  .chip.chip-low[aria-pressed="true"] { background: var(--low); border-color: var(--low); color: var(--surface); }
-
-  /* Lembar baris */
-  .rows {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--r);
-    overflow: hidden;
-  }
-  .row-head {
-    font-size: 0.7rem;
-    background: var(--surface-2);
-    border-bottom: 1px solid var(--line);
-  }
-  .cat-head {
-    display: flex;
-    gap: 8px;
-    align-items: baseline;
-    padding: 12px 12px 6px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    font-stretch: 85%;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    border-top: 1px solid var(--line);
-  }
-  .cat-head:first-child { border-top: 0; }
-  .cat-head span { font-family: var(--font-body); font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--muted); font-size: 0.78rem; }
-
-  .srow, .stock-head {
-    display: grid;
-    grid-template-columns: 2rem minmax(0, 1fr) 4.75rem 4.75rem 4.75rem 5.75rem 12.5rem;
-    gap: 8px;
-    align-items: center;
-    padding: 6px 12px;
-  }
-  .srow { border-top: 1px solid var(--line); }
-  .cat-head + .srow { border-top: 0; }
-  .srow.is-low { background: linear-gradient(90deg, var(--low-soft), transparent 38%); }
-  .c-no { color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
-  .c-name { display: grid; min-width: 0; }
-  .c-name .nm { font-weight: 600; overflow-wrap: anywhere; }
-  .c-name .cat { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.04em; }
-  .mini { display: none; font-size: 0.68rem; color: var(--muted); }
-  .c-in { display: grid; gap: 2px; min-width: 0; }
-  .c-in input { padding: 6px 7px; }
-  .c-side { display: flex; gap: 6px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
-
-  .pill {
+  .icon-btn {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    font-size: 0.76rem;
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 999px;
-    white-space: nowrap;
-    font-variant-numeric: tabular-nums;
-    color: var(--muted);
-    border: 1px dashed var(--line);
-  }
-  .pill.ok, .pill.total { border-style: solid; }
-  .pill.low { background: var(--low); color: var(--surface); border-color: var(--low); }
-  .btn.in-order { color: var(--accent); border-color: transparent; background: transparent; cursor: default; opacity: 1; }
-
-  .orow, .order-head {
-    display: grid;
-    grid-template-columns: 2rem minmax(0, 1fr) 6rem 7rem 8.5rem 2.25rem;
-    gap: 8px;
-    align-items: center;
-    padding: 8px 12px;
-  }
-  .orow { border-top: 1px solid var(--line); }
-  .orow:first-child { border-top: 0; }
-  .c-hint { font-size: 0.78rem; color: var(--muted); }
-  .c-hint.low { color: var(--low); font-weight: 600; }
-  .icon-btn {
-    width: 2.1rem; height: 2.1rem;
-    border-radius: var(--r);
+    justify-content: center;
+    width: var(--hit);
+    height: var(--hit);
+    padding: 0;
+    border-radius: var(--radius);
     border: 1px solid transparent;
     background: transparent;
-    color: var(--muted);
-    font-size: 1.2rem;
-    line-height: 1;
+    color: var(--fg-secondary);
+    cursor: pointer;
+    transition: background-color var(--motion-150) ease, border-color var(--motion-150) ease, color var(--motion-150) ease;
+  }
+  .icon-btn svg { width: 20px; height: 20px; }
+  .icon-btn:hover { color: var(--foreground); border-color: var(--border-l2); background: var(--surface-l0); }
+  .icon-btn.is-added { color: var(--accent); }
+  .icon-btn.is-remove:hover { color: var(--critical-text); }
+
+  .kbd {
+    display: inline-block;
+    min-width: 20px;
+    padding: 0 var(--space-1);
+    border: 1px solid var(--border-l2);
+    border-radius: 4px;
+    font-size: var(--text-meta);
+    line-height: var(--leading-meta);
+    font-family: inherit;
+    font-weight: var(--w-medium);
+    text-align: center;
+    color: var(--fg-secondary);
+  }
+  .hover-only { display: none; }
+  @media (hover: hover) { .hover-only { display: inline-block; } }
+
+  /* ---------- fields ---------- */
+  .field { display: grid; gap: var(--space-1); min-width: 0; align-content: start; }
+  .label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-secondary);
+    font-weight: var(--w-medium);
+    line-height: var(--leading-secondary);
+  }
+  .label .optional { font-weight: var(--w-regular); color: var(--fg-secondary); }
+  input[type="text"], input[type="search"], input[type="tel"], input[type="date"], input:not([type]), select {
+    width: 100%;
+    min-width: 0;
+    height: var(--hit);
+    padding: 0 var(--space-3);
+    border: 1px solid var(--border-l2);
+    border-radius: var(--radius);
+    background: var(--surface-l0);
+    color: var(--foreground);
+    font: inherit;
+    font-size: var(--text-body);
+    transition: border-color var(--motion-150) ease;
+  }
+  input::placeholder { color: var(--fg-secondary); opacity: 1; }
+  input:hover, select:hover { border-color: var(--fg-secondary); }
+  [aria-invalid="true"] { border-color: var(--critical-text) !important; }
+  .help { font-size: var(--text-meta); line-height: var(--leading-meta); color: var(--fg-secondary); min-height: calc(var(--text-meta) * 1.4); }
+  .field-error { font-size: var(--text-secondary); line-height: var(--leading-secondary); color: var(--critical-text); }
+  .input-icon { position: relative; }
+  .input-icon svg { position: absolute; left: var(--space-3); top: 12px; width: 20px; height: 20px; color: var(--fg-secondary); pointer-events: none; }
+  .input-icon input { padding-left: 40px; }
+
+  .check {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--hit);
+    font-size: var(--text-secondary);
     cursor: pointer;
   }
-  .icon-btn:hover { color: var(--low); border-color: var(--line); }
+  .check input { width: 20px; height: 20px; margin: 0; font: inherit; accent-color: var(--accent); }
+
+  /* Edit satu kolom di tempat: tampilan dan input berbagi satu kotak */
+  .inline-edit { display: grid; height: var(--hit); }
+  .inline-edit > * { grid-area: 1 / 1; width: 100%; height: 100%; margin: 0; }
+  .inline-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding: 0 var(--space-3);
+    border: 1px solid var(--border-l2);
+    border-radius: var(--radius);
+    background: var(--surface-l1);
+    color: var(--foreground);
+    font: inherit;
+    font-size: var(--text-body);
+    font-variant-numeric: tabular-nums;
+    text-align: left;
+    cursor: pointer;
+  }
+  .inline-display svg { width: 20px; height: 20px; color: var(--fg-secondary); }
+  .inline-display:hover { border-color: var(--fg-secondary); }
+
+  /* ---------- page sections ---------- */
+  .step-panel { display: grid; gap: var(--space-6); padding-block: var(--space-8) var(--space-12); }
+  .section-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+  .section-head > div { display: grid; gap: var(--space-2); min-width: 0; }
+  .section-head h2:focus:not(:focus-visible) { outline: none; }
+  .toolbar { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--space-4); }
+  .step-msg {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--critical-text);
+    border-radius: var(--radius);
+    background: var(--critical-bg);
+    color: var(--critical-text);
+    font-size: var(--text-secondary);
+    line-height: var(--leading-secondary);
+  }
+
+  /* Lembar data: L1 dengan border + garis tipis antar baris */
+  .sheet {
+    border: 1px solid var(--border-l1);
+    border-radius: var(--radius);
+    background: var(--surface-l0);
+    box-shadow: var(--inset-hi);
+    overflow: hidden;
+  }
+  .sheet-head {
+    background: var(--surface-l1);
+    border-bottom: 1px solid var(--border-l1);
+    font-size: var(--text-secondary);
+    font-weight: var(--w-medium);
+    color: var(--fg-secondary);
+  }
+  .group-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4) var(--space-2);
+    background: var(--surface-l1);
+    border-top: 1px solid var(--border-l1);
+    border-bottom: 1px solid var(--border-l1);
+    font-size: var(--text-secondary);
+    font-weight: var(--w-semibold);
+  }
+  .group-row:first-child { border-top: 0; }
+  .group-row .meta { font-weight: var(--w-regular); }
+
+  .srow, .stock-cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 80px 80px 80px 96px 144px var(--hit);
+    gap: var(--space-2);
+    align-items: center;
+    padding: var(--space-2) var(--space-4);
+  }
+  .stock-cols { padding-block: var(--space-3); }
+  .srow + .srow { border-top: 1px solid var(--border-l1); }
+  .c-name { display: grid; min-width: 0; }
+  .c-name .nm { font-weight: var(--w-medium); overflow-wrap: break-word; }
+  .c-cell { display: grid; gap: var(--space-1); min-width: 0; }
+  .c-cell input { padding: 0 var(--space-2); }
+  .c-status { display: flex; justify-content: flex-end; }
+  .c-act { display: flex; justify-content: flex-end; }
+  .mini { display: none; font-size: var(--text-meta); line-height: var(--leading-meta); color: var(--fg-secondary); }
+
+  .status { font-size: var(--text-secondary); line-height: var(--leading-secondary); color: var(--fg-secondary); text-align: right; font-variant-numeric: tabular-nums; }
+  .status-critical {
+    display: inline-block;
+    padding: var(--space-1) var(--space-2);
+    border-radius: 4px;
+    background: var(--critical-bg);
+    color: var(--critical-text);
+    font-size: var(--text-secondary);
+    font-weight: var(--w-medium);
+    line-height: var(--leading-secondary);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .orow, .order-cols {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr) 96px 112px 176px var(--hit);
+    gap: var(--space-2);
+    align-items: center;
+    padding: var(--space-2) var(--space-4);
+  }
+  .order-cols { padding-block: var(--space-3); }
+  .orow + .orow { border-top: 1px solid var(--border-l1); }
+  .c-no { font-size: var(--text-secondary); color: var(--fg-secondary); font-variant-numeric: tabular-nums; }
+  .c-note { font-size: var(--text-secondary); line-height: var(--leading-secondary); color: var(--fg-secondary); min-width: 0; }
+  .c-note.is-error { color: var(--critical-text); }
 
   .empty {
-    padding: 28px 16px;
-    text-align: center;
-    color: var(--muted);
     display: grid;
-    gap: 10px;
-    justify-items: center;
+    gap: var(--space-2);
+    justify-items: start;
+    padding: var(--space-8) var(--space-4);
   }
-  .empty p { margin: 0; max-width: 46ch; }
-  .note { margin: 0; font-size: 0.85rem; color: var(--muted); }
-  .warn {
-    margin: 0;
-    font-size: 0.85rem;
-    color: var(--low);
-    background: var(--low-soft);
-    border-radius: var(--r);
-    padding: 8px 10px;
-  }
+  .empty .btn-row { margin-top: var(--space-2); }
 
   /* Kirim */
-  .send {
+  .send-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-    gap: 16px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: var(--space-8);
     align-items: start;
   }
-  .send-col { display: grid; gap: 12px; min-width: 0; }
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--r);
-    padding: 14px;
-    display: grid;
-    gap: 12px;
-  }
-  .recipient { display: grid; gap: 4px; }
-  .recipient-line { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
-  .recipient strong { font-family: var(--font-mono); font-weight: 500; font-size: 1.05rem; user-select: all; }
-  .inline-form { display: flex; flex-wrap: wrap; gap: 8px; }
-  .inline-form input { flex: 1 1 160px; width: auto; }
-  .toggle { display: flex; gap: 8px; align-items: center; font-size: 0.9rem; cursor: pointer; }
-  .toggle input { width: 1.05rem; height: 1.05rem; accent-color: var(--accent); }
+  .send-form { display: grid; gap: var(--space-4); }
+  .send-form .row-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-4); }
+  .send-preview { display: grid; gap: var(--space-3); min-width: 0; }
   .preview {
     margin: 0;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    line-height: 1.55;
+    padding: var(--space-4);
+    max-height: 26rem;
+    overflow: auto;
+    border: 1px solid var(--border-l1);
+    border-radius: var(--radius);
+    background: var(--surface-l1);
+    box-shadow: var(--inset-hi);
+    font-family: var(--font-ui);
+    font-size: var(--text-secondary);
+    line-height: var(--leading-secondary);
     white-space: pre-wrap;
     overflow-wrap: anywhere;
-    background: var(--surface-2);
-    border: 1px solid var(--line);
-    border-radius: var(--r);
-    padding: 12px;
-    max-height: 420px;
-    overflow: auto;
   }
-  .preview.csv { white-space: pre; overflow-wrap: normal; }
-  details summary { cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+  .sent-note { font-size: var(--text-secondary); line-height: var(--leading-secondary); color: var(--fg-secondary); }
+
+  /* Bar langkah yang menempel di bawah */
+  .wizard-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    background: var(--surface-l1);
+    border-top: 1px solid var(--border-l1);
+    box-shadow: var(--inset-hi);
+    padding-top: var(--space-3);
+    padding-bottom: max(var(--space-3), env(safe-area-inset-bottom, 0px));
+  }
+  .wizard-bar .col { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+  .wizard-bar .bar-left { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
+  .wizard-bar .bar-status { font-size: var(--text-secondary); color: var(--fg-secondary); font-variant-numeric: tabular-nums; }
+
+  /* ---------- overlays ---------- */
+  dialog {
+    width: min(28rem, calc(100% - 32px));
+    padding: 0;
+    border: 1px solid var(--border-l2);
+    border-radius: 12px;
+    background: var(--surface-l3);
+    color: var(--foreground);
+    box-shadow: var(--shadow-l3), var(--inset-hi);
+  }
+  dialog[open] { animation: dialog-in var(--motion-200) var(--ease-out); }
+  dialog::backdrop { background: var(--scrim); animation: fade-in var(--motion-200) var(--ease-out); }
+  .dialog-body { display: grid; gap: var(--space-3); padding: var(--space-6); }
+  .dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2); padding: 0 var(--space-6) var(--space-6); }
+  @keyframes dialog-in { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: none; } }
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+  .tip {
+    position: fixed;
+    z-index: 100;
+    max-width: 16rem;
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--border-l2);
+    border-radius: 4px;
+    background: var(--surface-l3);
+    color: var(--foreground);
+    box-shadow: var(--shadow-l2);
+    font-size: var(--text-meta);
+    line-height: var(--leading-meta);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--motion-100) var(--ease-out);
+  }
+  .tip.is-visible { opacity: 1; }
 
   .toast {
     position: fixed;
+    z-index: 400;
     left: 50%;
-    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-    transform: translateX(-50%);
-    max-width: calc(100% - 32px);
-    background: var(--ink);
-    color: var(--bg);
-    padding: 10px 14px;
-    border-radius: var(--r);
-    font-size: 0.88rem;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.18);
-    transition: opacity 160ms ease;
-    z-index: 20;
+    bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+    max-width: min(32rem, calc(100% - 32px));
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--border-l2);
+    border-radius: var(--radius);
+    background: var(--foreground);
+    color: var(--surface-l0);
+    font-size: var(--text-secondary);
+    line-height: var(--leading-secondary);
+    box-shadow: var(--shadow-l2);
+    opacity: 0;
+    transform: translate(-50%, 8px);
+    pointer-events: none;
+    transition: opacity var(--motion-150) var(--ease-in), transform var(--motion-150) var(--ease-in);
+  }
+  .toast.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    transition: opacity var(--motion-200) var(--ease-out), transform var(--motion-200) var(--ease-out);
   }
 
-  @media (max-width: 760px) {
-    .send { grid-template-columns: minmax(0, 1fr); }
-  }
-  @media (max-width: 719px) {
-    .stock-head, .order-head { display: none; }
+  /* ---------- narrow (< 768px) ---------- */
+  @media (max-width: 767.98px) {
+    h1 { font-size: 1.728rem; }
+    .name-wide { display: none; }
+    .name-narrow { display: inline; }
+    .step { gap: var(--space-2); }
+    .step-meta { display: none; }
+    .toolbar { grid-template-columns: minmax(0, 1fr); }
+    .stock-cols, .order-cols { display: none; }
     .mini { display: block; }
+
     .srow {
-      grid-template-columns: 1.6rem repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr)) var(--hit);
       grid-template-areas:
-        "no name name side side"
-        "no bar gud min sat";
-      row-gap: 6px;
-      padding: 10px 12px;
+        "name name name name act"
+        "status status status status status"
+        "bar gud min sat sat";
+      row-gap: var(--space-2);
+      padding: var(--space-3);
     }
-    .srow .c-no { grid-area: no; align-self: start; padding-top: 2px; }
+    /* "Belum dihitung" sudah terlihat dari kolom yang kosong */
+    .srow.is-uncounted .c-status { display: none; }
     .srow .c-name { grid-area: name; }
+    .srow .c-status { grid-area: status; }
+    .srow .c-act { grid-area: act; }
     .srow .c-bar { grid-area: bar; }
     .srow .c-gud { grid-area: gud; }
     .srow .c-min { grid-area: min; }
     .srow .c-sat { grid-area: sat; }
-    .srow .c-side { grid-area: side; }
+    .srow .c-status { justify-content: flex-start; margin-top: calc(var(--space-1) * -1); }
+
     .orow {
-      grid-template-columns: 1.6rem minmax(0, 1fr) minmax(0, 1fr) 2.25rem;
+      grid-template-columns: 24px minmax(0, 1fr) minmax(0, 1fr) var(--hit);
       grid-template-areas:
-        "no bahan bahan del"
+        "no bahan bahan act"
         "no qty sat ."
-        "no hint hint hint";
-      row-gap: 6px;
+        "no note note note";
+      row-gap: var(--space-2);
+      padding-block: var(--space-3);
     }
-    .orow .c-no { grid-area: no; align-self: start; padding-top: 22px; }
+    .orow .c-no { grid-area: no; align-self: start; padding-top: 24px; }
     .orow .c-bahan { grid-area: bahan; }
     .orow .c-qty { grid-area: qty; }
     .orow .c-sat { grid-area: sat; }
-    .orow .c-hint { grid-area: hint; }
-    .orow .c-hint:empty { display: none; }
-    .orow .c-del { grid-area: del; align-self: end; }
-    .stat-num { font-size: 1.2rem; }
-    .tab { font-size: 0.88rem; }
+    .orow .c-note { grid-area: note; }
+    .orow .c-note:empty { display: none; }
+    .orow .c-act { grid-area: act; align-self: end; }
+
+    .send-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
+    .wizard-bar .bar-status { display: none; }
+    .wizard-bar .col { justify-content: flex-end; }
+    .wizard-bar .bar-left { margin-right: auto; }
   }
+
   @media (prefers-reduced-motion: reduce) {
-    .toast { transition: none; }
+    dialog[open], dialog::backdrop { animation: fade-in var(--motion-150) linear; }
+    .toast, .toast.is-visible { transform: translate(-50%, 0); transition: opacity var(--motion-150) linear; }
+    .tip { transition: none; }
+    .step, .btn, .icon-btn, input, select { transition: none; }
   }
 </style>
 </head>
 <body>
 
 <div class="app">
-  <header class="sheet">
-    <div class="title-row">
-      <div>
-        <p class="eyebrow">Bahan baku · v2</p>
-        <h1>Daily Stock &amp; Order</h1>
+  <header class="page-header">
+    <div class="col">
+      <div class="title-row">
+        <div class="title">
+          <h1>Daily Stock &amp; Order</h1>
+          <p class="meta" id="saveStatus">Isian tersimpan otomatis di perangkat ini</p>
+        </div>
+        <button id="btnNewDay" class="btn" type="button">Mulai hari baru</button>
       </div>
-      <div class="draft">
-        <span id="saveStatus">Isian tersimpan otomatis di perangkat ini</span>
-        <button id="btnNewDay" class="btn small" type="button">Mulai hari baru</button>
-      </div>
-    </div>
-
-    <div class="fields">
-      <label class="field"><span class="label">Tanggal order</span><input id="tanggal" type="date"></label>
-      <label class="field"><span class="label">PIC</span><input id="pic" type="text" placeholder="Nama staf" autocomplete="off"></label>
-      <label class="field"><span class="label">Area / shift</span><input id="area" type="text" placeholder="mis. Bar pagi" autocomplete="off"></label>
-    </div>
-
-    <div id="confirmNewDay" class="confirm" hidden>
-      <p><strong>Mulai hari baru?</strong> Hitungan Bar, Gudang, PIC, Area, dan semua baris order dihapus. Stok minimum, satuan, nomor WhatsApp, dan format CSV tetap disimpan.</p>
-      <div class="btn-row">
-        <button id="btnNewDayYes" class="btn primary" type="button">Ya, mulai hari baru</button>
-        <button id="btnNewDayNo" class="btn" type="button">Batal</button>
-      </div>
-    </div>
-
-    <div id="introBanner" class="banner" hidden>
-      <span>Isi kolom <strong>Min</strong> sekali untuk tiap bahan. Setelah itu, bahan yang stoknya kurang ditandai dan jumlah order disarankan otomatis.</span>
-      <button id="btnIntroClose" class="linkbtn" type="button">Mengerti</button>
+      <nav class="steps" aria-label="Langkah">
+        <button class="step" type="button" data-step="stok">
+          <span class="step-no">1</span>
+          <span class="step-text"><span class="step-name"><span class="name-wide">Hitung stok</span><span class="name-narrow">Stok</span></span><span class="step-meta" id="metaStok"></span></span>
+        </button>
+        <button class="step" type="button" data-step="order">
+          <span class="step-no">2</span>
+          <span class="step-text"><span class="step-name"><span class="name-wide">Susun order</span><span class="name-narrow">Order</span></span><span class="step-meta" id="metaOrder"></span></span>
+        </button>
+        <button class="step" type="button" data-step="kirim">
+          <span class="step-no">3</span>
+          <span class="step-text"><span class="step-name"><span class="name-wide">Kirim order</span><span class="name-narrow">Kirim</span></span><span class="step-meta" id="metaKirim"></span></span>
+        </button>
+      </nav>
     </div>
   </header>
 
-  <section class="stats" aria-label="Ringkasan hari ini">
-    <div class="stat"><span class="stat-num" id="statCounted">0/67</span><span class="stat-label">bahan dihitung</span></div>
-    <div class="stat is-low"><span class="stat-num" id="statLow">0</span><span class="stat-label">di bawah minimum</span></div>
-    <div class="stat"><span class="stat-num" id="statReady">0</span><span class="stat-label">bahan siap dikirim</span></div>
-  </section>
+  <main>
+    <div class="col">
 
-  <nav class="tabs" role="tablist" aria-label="Langkah">
-    <button class="tab" role="tab" id="tab-stok" data-tab="stok" aria-controls="panel-stok" type="button"><span class="step">1</span>Stok <span class="count" id="countStok"></span></button>
-    <button class="tab" role="tab" id="tab-order" data-tab="order" aria-controls="panel-order" type="button"><span class="step">2</span>Order <span class="count" id="countOrder"></span></button>
-    <button class="tab" role="tab" id="tab-kirim" data-tab="kirim" aria-controls="panel-kirim" type="button"><span class="step">3</span>Kirim <span class="count" id="countKirim"></span></button>
-  </nav>
-
-  <!-- 1. STOK -->
-  <section class="panel" id="panel-stok" role="tabpanel" aria-labelledby="tab-stok">
-    <div class="toolbar">
-      <input id="search" class="search" type="search" placeholder="Cari bahan…" aria-label="Cari bahan" autocomplete="off">
-      <button id="btnAddLowStock" class="btn primary" type="button">Tambah yang kurang ke order</button>
-    </div>
-    <div class="chips" id="catChips" role="group" aria-label="Filter kategori"></div>
-    <div class="rows">
-      <div class="stock-head row-head label" aria-hidden="true">
-        <span>No</span><span>Bahan</span><span class="num">Bar</span><span class="num">Gudang</span><span class="num">Min</span><span>Satuan</span><span style="text-align:right">Status</span>
-      </div>
-      <div id="stockList"></div>
-      <div id="stockEmpty" class="empty" hidden><p>Tidak ada bahan yang cocok dengan pencarian atau filter ini.</p></div>
-    </div>
-    <p class="note">Status "Kurang" muncul kalau Bar + Gudang di bawah Min. Saran order = Min − (Bar + Gudang).</p>
-  </section>
-
-  <!-- 2. ORDER -->
-  <section class="panel" id="panel-order" role="tabpanel" aria-labelledby="tab-order" hidden>
-    <div class="toolbar">
-      <p class="note" id="orderMeta"></p>
-      <div class="btn-row">
-        <button id="btnAddLow" class="btn primary" type="button">Tambah yang kurang</button>
-        <button id="btnAddRow" class="btn" type="button">Tambah baris</button>
-        <button id="btnAddAll" class="btn" type="button">Tambah semua bahan</button>
-        <button id="btnClearOrder" class="btn ghost danger" type="button">Kosongkan</button>
-      </div>
-    </div>
-    <div id="confirmClear" class="confirm" hidden>
-      <p><strong>Kosongkan order?</strong> Semua baris order dihapus. Hitungan stok tidak berubah.</p>
-      <div class="btn-row">
-        <button id="btnClearYes" class="btn primary" type="button">Ya, kosongkan</button>
-        <button id="btnClearNo" class="btn" type="button">Batal</button>
-      </div>
-    </div>
-    <p id="orderWarn" class="warn" hidden></p>
-    <div class="rows">
-      <div class="order-head row-head label" aria-hidden="true">
-        <span>No</span><span>Bahan</span><span class="num">Jumlah</span><span>Satuan</span><span>Catatan</span><span></span>
-      </div>
-      <div id="orderList"></div>
-      <div id="orderEmpty" class="empty" hidden>
-        <p>Belum ada bahan di order. Tambahkan bahan yang stoknya kurang, atau pilih bahan satu per satu.</p>
-        <div class="btn-row">
-          <button id="btnAddLowEmpty" class="btn primary" type="button">Tambah yang kurang</button>
-          <button id="btnAddRowEmpty" class="btn" type="button">Tambah baris</button>
+      <!-- 1. HITUNG STOK -->
+      <section class="step-panel" id="panel-stok" aria-labelledby="h-stok">
+        <div class="section-head">
+          <div>
+            <h2 id="h-stok" tabindex="-1">Hitung stok</h2>
+            <p class="desc">Isi stok Bar dan Gudang tiap bahan. Isi Min sekali saja; bahan di bawah Min ditandai Kurang beserta saran jumlah order.</p>
+          </div>
+          <button id="btnAddLowStock" class="btn" type="button">Tambah yang kurang ke order</button>
         </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- 3. KIRIM -->
-  <section class="panel" id="panel-kirim" role="tabpanel" aria-labelledby="tab-kirim" hidden>
-    <div class="send">
-      <div class="send-col">
-        <div class="card">
-          <span class="label">Pratinjau pesan WhatsApp</span>
-          <pre id="msgPreview" class="preview"></pre>
-        </div>
-      </div>
-      <div class="send-col">
-        <div class="card">
-          <div class="recipient">
-            <span class="label">Dikirim ke</span>
-            <div class="recipient-line" id="waView">
-              <strong id="waDisplay"></strong>
-              <button id="btnWaEdit" class="linkbtn" type="button">Ubah nomor</button>
+        <div class="toolbar">
+          <div class="field">
+            <label class="label" for="search">Cari bahan <span class="kbd hover-only" aria-hidden="true">/</span></label>
+            <div class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input id="search" type="search" placeholder="mis. caramel" autocomplete="off">
             </div>
-            <form id="waForm" class="inline-form" hidden>
-              <input id="waInput" type="tel" inputmode="tel" autocomplete="off" placeholder="mis. 0812 3456 7890" aria-label="Nomor WhatsApp tujuan">
-              <button class="btn primary small" type="submit">Simpan</button>
-              <button id="btnWaCancel" class="btn small" type="button">Batal</button>
-            </form>
-            <p id="waError" class="warn" hidden></p>
           </div>
-          <label class="toggle"><input type="checkbox" id="includeStock"> Sertakan ringkasan stok (Bar / Gudang)</label>
-          <p id="sendWarn" class="warn" hidden></p>
-          <div class="btn-row">
-            <a id="waLink" class="btn primary" href="https://wa.me/" target="_blank" rel="noopener">Buka WhatsApp</a>
-            <button id="btnCopyMsg" class="btn" type="button">Salin pesan</button>
-          </div>
-          <p class="note">WhatsApp terbuka dengan pesan yang sudah terisi; tekan Kirim di WhatsApp.</p>
-        </div>
-        <div class="card">
-          <label class="field"><span class="label">Format CSV</span>
-            <select id="csvSep">
-              <option value=",">Standar, pemisah koma (Google Sheets, Excel bahasa Inggris)</option>
-              <option value=";">Excel Indonesia, pemisah titik koma</option>
+          <div class="field">
+            <label class="label" for="filter">Tampilkan</label>
+            <select id="filter">
+              <option value="ALL">Semua bahan</option>
+              <option value="LOW">Yang kurang saja</option>
+              <option value="UNCOUNTED">Belum dihitung</option>
+              <optgroup label="Kategori">
+                <option value="SYRUP">SYRUP</option>
+                <option value="POWDER">POWDER</option>
+                <option value="SAUS">SAUS</option>
+                <option value="OTHER">OTHER</option>
+                <option value="BEANS">BEANS</option>
+              </optgroup>
             </select>
-          </label>
-          <div class="btn-row">
-            <button id="btnCsvOrder" class="btn" type="button">Unduh CSV order</button>
-            <button id="btnCsvStock" class="btn" type="button">Unduh CSV stok</button>
           </div>
-          <details>
-            <summary>Lihat CSV order</summary>
-            <pre id="csvPreview" class="preview csv"></pre>
-          </details>
         </div>
-      </div>
+
+        <div class="sheet">
+          <div role="table" aria-label="Stok bahan baku">
+            <div class="sheet-head" role="rowgroup">
+              <div class="stock-cols" role="row">
+                <span role="columnheader" id="ch-nama">Bahan</span>
+                <span role="columnheader" id="ch-bar" class="num">Bar</span>
+                <span role="columnheader" id="ch-gudang" class="num">Gudang</span>
+                <span role="columnheader" id="ch-min" class="num">Min</span>
+                <span role="columnheader" id="ch-satuan">Satuan</span>
+                <span role="columnheader" class="num">Status</span>
+                <span role="columnheader"><span class="sr-only">Aksi</span></span>
+              </div>
+            </div>
+            <div id="stockBody" role="rowgroup"></div>
+          </div>
+          <div id="stockEmpty" class="empty" hidden>
+            <h3>Tidak ada bahan yang cocok</h3>
+            <p class="secondary">Coba kata lain, atau tampilkan lagi semua 67 bahan.</p>
+            <div class="btn-row"><button id="btnClearFilter" class="btn btn-primary" type="button">Hapus filter</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. SUSUN ORDER -->
+      <section class="step-panel" id="panel-order" aria-labelledby="h-order" hidden>
+        <div class="section-head">
+          <div>
+            <h2 id="h-order" tabindex="-1">Susun order</h2>
+            <p class="desc" id="orderDesc"></p>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button id="btnAddLow" class="btn btn-primary" type="button">Tambah yang kurang</button>
+          <button id="btnAddRow" class="btn" type="button">Tambah baris</button>
+          <button id="btnAddAll" class="btn" type="button">Tambah semua bahan</button>
+          <button id="btnClearOrder" class="btn btn-text-danger" type="button">Kosongkan order</button>
+        </div>
+        <p id="orderMsg" class="step-msg" role="alert" hidden></p>
+
+        <div class="sheet">
+          <div role="table" aria-label="Baris order">
+            <div class="sheet-head" role="rowgroup">
+              <div class="order-cols" role="row">
+                <span role="columnheader">No</span>
+                <span role="columnheader" id="oh-bahan">Bahan</span>
+                <span role="columnheader" id="oh-qty" class="num">Jumlah</span>
+                <span role="columnheader" id="oh-sat">Satuan</span>
+                <span role="columnheader">Catatan</span>
+                <span role="columnheader"><span class="sr-only">Aksi</span></span>
+              </div>
+            </div>
+            <div id="orderBody" role="rowgroup"></div>
+          </div>
+          <div id="orderEmpty" class="empty" hidden>
+            <h3>Order masih kosong</h3>
+            <p class="secondary">Bahan yang ditambahkan di sini dikirim ke WhatsApp beserta jumlah dan satuannya.</p>
+            <div class="btn-row">
+              <button id="btnAddLowEmpty" class="btn btn-primary" type="button">Tambah yang kurang</button>
+              <button id="btnAddRowEmpty" class="btn" type="button">Tambah baris</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. KIRIM -->
+      <section class="step-panel" id="panel-kirim" aria-labelledby="h-kirim" hidden>
+        <div class="section-head">
+          <div>
+            <h2 id="h-kirim" tabindex="-1">Kirim order</h2>
+            <p class="desc">Periksa pesan, lalu kirim lewat WhatsApp. CSV bisa diunduh untuk arsip.</p>
+          </div>
+        </div>
+
+        <div class="send-grid">
+          <div class="send-form">
+            <div class="row-2">
+              <div class="field">
+                <label class="label" for="tanggal">Tanggal order</label>
+                <input id="tanggal" type="date" required aria-describedby="tanggalHelp">
+                <p class="help" id="tanggalHelp"></p>
+              </div>
+              <div class="field">
+                <label class="label" for="pic">PIC</label>
+                <input id="pic" type="text" required autocomplete="name" aria-describedby="picHelp">
+                <p class="help" id="picHelp">Diingat untuk hari berikutnya.</p>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label" for="area">Area / shift <span class="optional">(opsional)</span></label>
+              <input id="area" type="text" placeholder="mis. Bar pagi" autocomplete="off">
+            </div>
+            <div class="field">
+              <span class="label" id="waLabel">Kirim ke WhatsApp</span>
+              <div class="inline-edit">
+                <button id="waDisplay" class="inline-display" type="button" aria-describedby="waLabel waHelp">
+                  <span id="waText"></span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                </button>
+                <input id="waInput" type="tel" inputmode="tel" autocomplete="off" aria-labelledby="waLabel" aria-describedby="waHelp" hidden>
+              </div>
+              <p class="help" id="waHelp">Ketuk untuk mengubah. Enter menyimpan, Esc membatalkan.</p>
+            </div>
+            <label class="check"><input type="checkbox" id="includeStock"> Sertakan ringkasan stok Bar / Gudang di pesan</label>
+            <div class="field">
+              <label class="label" for="csvSep">Format CSV</label>
+              <select id="csvSep">
+                <option value=",">Standar, pemisah koma (Google Sheets, Excel bahasa Inggris)</option>
+                <option value=";">Excel Indonesia, pemisah titik koma</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="send-preview">
+            <h3>Pratinjau pesan</h3>
+            <pre id="msgPreview" class="preview"></pre>
+            <div id="previewEmpty" class="sheet empty" hidden>
+              <h3>Belum ada yang bisa dikirim</h3>
+              <p class="secondary">Pesan berisi bahan yang sudah diberi jumlah di langkah 2.</p>
+              <div class="btn-row"><button id="btnGoOrder" class="btn btn-primary" type="button">Susun order</button></div>
+            </div>
+            <div class="btn-row">
+              <button id="btnCopyMsg" class="btn" type="button">Salin pesan</button>
+              <button id="btnCsvOrder" class="btn" type="button">Unduh CSV order</button>
+              <button id="btnCsvStock" class="btn" type="button">Unduh CSV stok</button>
+            </div>
+            <p id="sendMsg" class="step-msg" role="alert" hidden></p>
+            <p id="sentNote" class="sent-note" hidden></p>
+          </div>
+        </div>
+      </section>
     </div>
-  </section>
+  </main>
+
+  <footer class="wizard-bar" aria-label="Navigasi langkah">
+    <div class="col">
+      <div class="bar-left">
+        <button id="btnBack" class="btn" type="button" hidden></button>
+        <span id="barStatus" class="bar-status"></span>
+      </div>
+      <button id="btnNext" class="btn btn-primary" type="button"></button>
+    </div>
+  </footer>
 </div>
 
-<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<dialog id="confirmDialog" aria-labelledby="confirmTitle" aria-describedby="confirmBody">
+  <div class="dialog-body">
+    <h2 id="confirmTitle"></h2>
+    <p id="confirmBody" class="secondary"></p>
+  </div>
+  <div class="dialog-actions">
+    <button id="confirmCancel" class="btn" type="button" autofocus>Batal</button>
+    <button id="confirmOk" class="btn btn-danger" type="button"></button>
+  </div>
+</dialog>
+
+<div id="tip" class="tip" role="tooltip" hidden></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
-  // Nomor default (format internasional, tanpa "+" / "0" di depan). Bisa diganti dari tab Kirim.
+  // Nomor default (format internasional, tanpa "+" / "0" di depan). Bisa diganti di langkah 3.
   const DEFAULT_WA = "6281239735868";
   const STORE_KEY = "bahan-baku-tuan:v2";
   const CATS = ["SYRUP", "POWDER", "SAUS", "OTHER", "BEANS"];
+  const STEPS = ["stok", "order", "kirim"];
 
   const bahanList = [
     {no:1, name:"CARAMEL", category:"SYRUP", satuan:"BOTOL"},
@@ -716,6 +889,12 @@
   ];
   const BY_NO = new Map(bahanList.map(b => [b.no, b]));
 
+  const ICON = {
+    plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>',
+    trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+  };
+
   // ---------- helpers ----------
   const $ = id => document.getElementById(id);
 
@@ -729,15 +908,24 @@
     const n = Number(t);
     return Number.isFinite(n) ? n : null;
   }
+  // hanya angka dan satu pemisah desimal, jadi isian angka tidak pernah salah format
+  function cleanNum(v) {
+    let s = v.replace(/[^\d.,]/g, "");
+    const i = s.search(/[.,]/);
+    if (i >= 0) s = s.slice(0, i + 1) + s.slice(i + 1).replace(/[.,]/g, "");
+    return s;
+  }
   const round2 = n => Math.round(n * 100) / 100;
   // tanpa pemisah ribuan, supaya hasilnya bisa dibaca ulang oleh parseNum
   const fmt = n => n.toLocaleString("id-ID", { maximumFractionDigits: 2, useGrouping: false });
   const fmtVal = s => { const n = parseNum(s); return n === null ? "-" : fmt(n); };
-  function fmtDate(iso) {
-    if (!iso) return "-";
+  function toDate(iso) {
     const [y, m, d] = iso.split("-").map(Number);
-    return new Date(y, m - 1, d).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    return new Date(y, m - 1, d);
   }
+  const fmtDate = iso => iso ? toDate(iso).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) : "-";
+  const fmtDateShort = iso => iso ? toDate(iso).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) : "-";
+  const fmtTime = ts => new Date(ts).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
   // 0812..., +62 812..., 812... -> 62812...
   function normalizeWa(input) {
     let d = String(input).replace(/\D/g, "");
@@ -745,10 +933,8 @@
     else if (d.startsWith("8")) d = "62" + d;
     return /^62\d{8,13}$/.test(d) ? d : null;
   }
-  function displayWa(num) {
-    const local = "0" + num.slice(2);
-    return local.replace(/^(\d{4})(\d{4})(\d+)$/, "$1-$2-$3");
-  }
+  const displayWa = num => ("0" + num.slice(2)).replace(/^(\d{4})(\d{4})(\d+)$/, "$1-$2-$3");
+  const label = b => `${b.name} (${b.category})`;
 
   // ---------- state ----------
   function emptyItems() {
@@ -760,7 +946,7 @@
     return {
       tanggal: todayLocal(), pic: "", area: "",
       items: emptyItems(), order: [], seq: 1,
-      includeStock: false, intro: true, tab: "stok",
+      includeStock: false, step: "stok", sentAt: null,
       settings: { waNumber: DEFAULT_WA, csvSep: "," },
     };
   }
@@ -775,6 +961,8 @@
         bahanList.forEach(b => { if (saved.items && saved.items[b.no]) Object.assign(items[b.no], saved.items[b.no]); });
         s.items = items;
         s.order = Array.isArray(s.order) ? s.order.filter(l => l && l.id) : [];
+        // v2 menyimpan langkah aktif sebagai "tab"
+        if (!STEPS.includes(s.step)) s.step = STEPS.includes(saved.tab) ? saved.tab : "stok";
         return s;
       }
     } catch (e) { /* storage tidak tersedia: mulai dari state baru */ }
@@ -788,10 +976,9 @@
     saveTimer = setTimeout(() => {
       try {
         localStorage.setItem(STORE_KEY, JSON.stringify(state));
-        const t = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
-        $("saveStatus").textContent = `Tersimpan di perangkat ini · ${t}`;
+        $("saveStatus").textContent = `Tersimpan otomatis di perangkat ini · ${fmtTime(Date.now())}`;
       } catch (e) {
-        $("saveStatus").textContent = "Isian tidak bisa disimpan di browser ini";
+        $("saveStatus").textContent = "Isian tidak bisa disimpan di browser ini, jadi bisa hilang saat halaman ditutup. Kirim order sebelum menutup halaman.";
       }
     }, 250);
   }
@@ -807,6 +994,7 @@
     const saran = counted && min !== null ? Math.max(0, round2(min - total)) : null;
     return { counted, total, min, saran };
   }
+  const lowList = () => bahanList.filter(b => calc(b.no).saran > 0);
   function orderLines() {
     return state.order.map(l => ({ line: l, bahan: l.no ? BY_NO.get(l.no) : null, qty: parseNum(l.qty) }));
   }
@@ -824,51 +1012,102 @@
   function toast(msg) {
     const el = $("toast");
     el.textContent = msg;
-    el.hidden = false;
-    el.style.opacity = "1";
+    el.classList.add("is-visible");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      el.style.opacity = "0";
-      setTimeout(() => { el.hidden = true; }, 200);
-    }, 2600);
+    toastTimer = setTimeout(() => el.classList.remove("is-visible"), 3000);
   }
 
-  // ---------- stok ----------
-  const filter = { q: "", cat: "ALL" };
-
-  function renderChips() {
-    const opts = [["ALL", "Semua"], ...CATS.map(c => [c, c]), ["LOW", "Kurang"]];
-    $("catChips").innerHTML = opts.map(([v, label]) =>
-      `<button type="button" class="chip${v === "LOW" ? " chip-low" : ""}" data-cat="${v}" aria-pressed="${filter.cat === v}">${label}</button>`
-    ).join("");
+  // ---------- tooltip (hover dan fokus keyboard) ----------
+  const tip = $("tip");
+  let tipFor = null;
+  function showTip(el) {
+    const text = el.getAttribute("aria-label");
+    if (!text) return;
+    tipFor = el;
+    tip.textContent = text;
+    tip.hidden = false;
+    el.setAttribute("aria-describedby", "tip");
+    const r = el.getBoundingClientRect();
+    const t = tip.getBoundingClientRect();
+    let top = r.top - t.height - 8;
+    if (top < 8) top = r.bottom + 8;
+    const left = Math.min(Math.max(8, r.left + r.width / 2 - t.width / 2), window.innerWidth - t.width - 8);
+    tip.style.top = `${top}px`;
+    tip.style.left = `${left}px`;
+    requestAnimationFrame(() => tip.classList.add("is-visible"));
   }
+  function hideTip() {
+    if (tipFor) tipFor.removeAttribute("aria-describedby");
+    tipFor = null;
+    tip.classList.remove("is-visible");
+    tip.hidden = true;
+  }
+  document.addEventListener("pointerover", e => {
+    const el = e.target.closest(".icon-btn");
+    if (el && el !== tipFor && e.pointerType === "mouse") showTip(el);
+  });
+  document.addEventListener("pointerout", e => {
+    if (tipFor && !tipFor.contains(e.relatedTarget)) hideTip();
+  });
+  document.addEventListener("focusin", e => {
+    const el = e.target.closest(".icon-btn");
+    if (el && el.matches(":focus-visible")) showTip(el); else if (tipFor) hideTip();
+  });
+  document.addEventListener("focusout", e => { if (e.target === tipFor) hideTip(); });
+  window.addEventListener("scroll", () => { if (tipFor) hideTip(); }, { passive: true });
 
+  // ---------- konfirmasi aksi hapus ----------
+  const dlg = $("confirmDialog");
+  let dlgResolve = null, dlgReturn = null;
+  function confirmAction({ title, body, confirmLabel }) {
+    dlgReturn = document.activeElement;
+    $("confirmTitle").textContent = title;
+    $("confirmBody").textContent = body;
+    $("confirmOk").textContent = confirmLabel;
+    hideTip();
+    dlg.showModal();
+    $("confirmCancel").focus();
+    return new Promise(resolve => { dlgResolve = resolve; });
+  }
+  function closeDialog(result) {
+    if (!dlg.open) return;
+    dlg.close();
+    const r = dlgResolve; dlgResolve = null;
+    if (dlgReturn && document.contains(dlgReturn)) dlgReturn.focus();
+    if (r) r(result);
+  }
+  $("confirmCancel").addEventListener("click", () => closeDialog(false));
+  $("confirmOk").addEventListener("click", () => closeDialog(true));
+  dlg.addEventListener("cancel", e => { e.preventDefault(); closeDialog(false); });
+  dlg.addEventListener("click", e => { if (e.target === dlg) closeDialog(false); });
+
+  // ---------- langkah 1: stok ----------
   function renderStock() {
     const html = [];
     CATS.forEach(cat => {
       const list = bahanList.filter(b => b.category === cat);
-      html.push(`<div class="cat-head" data-cat-head="${cat}">${cat} <span>${list.length} bahan</span></div>`);
+      html.push(`<div class="group-row" role="row" data-group="${cat}"><span role="rowheader">${cat}</span><span class="meta">${list.length} bahan</span></div>`);
       list.forEach(b => {
         html.push(
-          `<div class="srow" data-no="${b.no}">` +
-            `<span class="c-no">${b.no}</span>` +
-            `<span class="c-name"><span class="nm">${b.name}</span><span class="cat">${b.category}</span></span>` +
-            `<label class="c-in c-bar"><span class="mini">Bar</span><input id="bar-${b.no}" class="num" inputmode="decimal" autocomplete="off" aria-label="Stok bar ${b.name} ${b.category}"></label>` +
-            `<label class="c-in c-gud"><span class="mini">Gudang</span><input id="gudang-${b.no}" class="num" inputmode="decimal" autocomplete="off" aria-label="Stok gudang ${b.name} ${b.category}"></label>` +
-            `<label class="c-in c-min"><span class="mini">Min</span><input id="min-${b.no}" class="num" inputmode="decimal" autocomplete="off" aria-label="Stok minimum ${b.name} ${b.category}"></label>` +
-            `<label class="c-in c-sat"><span class="mini">Satuan</span><input id="satuan-${b.no}" placeholder="${b.satuan}" autocomplete="off" aria-label="Satuan ${b.name} ${b.category}"></label>` +
-            `<span class="c-side"><span class="pill"></span><button type="button" class="btn small" data-add="${b.no}">+ Order</button></span>` +
+          `<div class="srow" role="row" data-no="${b.no}">` +
+            `<div class="c-name" role="cell"><span class="nm" id="nm-${b.no}">${b.name}</span><span class="meta">No. ${b.no} · ${b.category}</span></div>` +
+            `<div class="c-cell c-bar" role="cell"><label class="mini" for="bar-${b.no}">Bar</label><input id="bar-${b.no}" class="num" inputmode="decimal" autocomplete="off" aria-labelledby="ch-bar nm-${b.no}"></div>` +
+            `<div class="c-cell c-gud" role="cell"><label class="mini" for="gudang-${b.no}">Gudang</label><input id="gudang-${b.no}" class="num" inputmode="decimal" autocomplete="off" aria-labelledby="ch-gudang nm-${b.no}"></div>` +
+            `<div class="c-cell c-min" role="cell"><label class="mini" for="min-${b.no}">Min</label><input id="min-${b.no}" class="num" inputmode="decimal" autocomplete="off" aria-labelledby="ch-min nm-${b.no}"></div>` +
+            `<div class="c-cell c-sat" role="cell"><label class="mini" for="satuan-${b.no}">Satuan</label><input id="satuan-${b.no}" autocomplete="off" aria-labelledby="ch-satuan nm-${b.no}"></div>` +
+            `<div class="c-status" role="cell"></div>` +
+            `<div class="c-act" role="cell"><button type="button" class="icon-btn" data-no="${b.no}"></button></div>` +
           `</div>`
         );
       });
     });
-    $("stockList").innerHTML = html.join("");
+    $("stockBody").innerHTML = html.join("");
     bahanList.forEach(b => {
       const it = state.items[b.no];
       $(`bar-${b.no}`).value = it.bar;
       $(`gudang-${b.no}`).value = it.gudang;
       $(`min-${b.no}`).value = it.min;
-      $(`satuan-${b.no}`).value = it.satuan;
+      $(`satuan-${b.no}`).value = it.satuan || b.satuan;
       updateStockRow(b.no);
     });
   }
@@ -876,67 +1115,67 @@
   function updateStockRow(no) {
     const row = document.querySelector(`.srow[data-no="${no}"]`);
     const c = calc(no);
-    const pill = row.querySelector(".pill");
-    row.classList.toggle("is-low", c.saran > 0);
-    if (!c.counted) {
-      pill.className = "pill";
-      pill.textContent = "Belum dihitung";
-    } else if (c.saran > 0) {
-      pill.className = "pill low";
-      pill.textContent = `Kurang ${fmt(c.saran)} ${satuanOf(no)}`;
-    } else if (c.saran === 0) {
-      pill.className = "pill ok";
-      pill.textContent = `Cukup · ${fmt(c.total)}`;
-    } else {
-      pill.className = "pill total";
-      pill.textContent = `Total ${fmt(c.total)}`;
-    }
-    const btn = row.querySelector("[data-add]");
+    const status = document.createElement("span");
+    status.className = c.saran > 0 ? "status-critical" : "status";
+    status.textContent = !c.counted ? "Belum dihitung"
+      : c.saran > 0 ? `Kurang ${fmt(c.saran)} ${satuanOf(no)}`
+      : c.saran === 0 ? `Cukup · ${fmt(c.total)}`
+      : `Total ${fmt(c.total)}`;
+    row.querySelector(".c-status").replaceChildren(status);
+    row.classList.toggle("is-uncounted", !c.counted);
+
+    const btn = row.querySelector(".icon-btn");
+    const b = BY_NO.get(no);
     const inOrder = state.order.some(l => l.no === no);
-    btn.disabled = inOrder;
-    btn.classList.toggle("in-order", inOrder);
-    btn.textContent = inOrder ? "Di order" : "+ Order";
+    btn.classList.toggle("is-added", inOrder);
+    btn.innerHTML = inOrder ? ICON.check : ICON.plus;
+    btn.setAttribute("aria-label", inOrder ? `Lihat ${label(b)} di order` : `Tambah ${label(b)} ke order`);
   }
 
+  const filter = { q: "", by: "ALL" };
   function applyFilter() {
     const q = filter.q.trim().toLowerCase();
     let visible = 0;
-    const shownCats = new Set();
+    const shown = new Set();
     document.querySelectorAll(".srow").forEach(row => {
       const no = Number(row.dataset.no);
       const b = BY_NO.get(no);
+      const c = calc(no);
       const matchQ = !q || b.name.toLowerCase().includes(q) || b.category.toLowerCase().includes(q);
-      const matchC = filter.cat === "ALL" || (filter.cat === "LOW" ? calc(no).saran > 0 : b.category === filter.cat);
-      row.hidden = !(matchQ && matchC);
-      if (!row.hidden) { visible++; shownCats.add(b.category); }
+      const matchF = filter.by === "ALL" || (filter.by === "LOW" ? c.saran > 0 : filter.by === "UNCOUNTED" ? !c.counted : b.category === filter.by);
+      row.hidden = !(matchQ && matchF);
+      if (!row.hidden) { visible++; shown.add(b.category); }
     });
-    document.querySelectorAll("[data-cat-head]").forEach(h => { h.hidden = !shownCats.has(h.dataset.catHead); });
+    document.querySelectorAll("[data-group]").forEach(g => { g.hidden = !shown.has(g.dataset.group); });
     $("stockEmpty").hidden = visible > 0;
   }
 
-  // ---------- order ----------
+  // ---------- langkah 2: order ----------
   const OPTIONS_HTML = `<option value="">Pilih bahan</option>` + CATS.map(cat =>
     `<optgroup label="${cat}">` +
-      bahanList.filter(b => b.category === cat).map(b => `<option value="${b.no}">${b.name} (${b.category})</option>`).join("") +
+      bahanList.filter(b => b.category === cat).map(b => `<option value="${b.no}">${label(b)}</option>`).join("") +
     `</optgroup>`
   ).join("");
 
+  let lineErrors = {};
+  let keepLineErrorFocus = null;
   function renderOrder() {
-    const list = $("orderList");
-    list.innerHTML = "";
+    const body = $("orderBody");
+    body.innerHTML = "";
     state.order.forEach((l, i) => {
       const row = document.createElement("div");
       row.className = "orow";
+      row.setAttribute("role", "row");
       row.dataset.id = l.id;
       row.innerHTML =
-        `<span class="c-no">${i + 1}</span>` +
-        `<label class="c-in c-bahan"><span class="mini">Bahan</span><select id="${l.id}-bahan" aria-label="Bahan baris ${i + 1}">${OPTIONS_HTML}</select></label>` +
-        `<label class="c-in c-qty"><span class="mini">Jumlah</span><input id="${l.id}-qty" class="num" inputmode="decimal" placeholder="0" autocomplete="off" aria-label="Jumlah baris ${i + 1}"></label>` +
-        `<label class="c-in c-sat"><span class="mini">Satuan</span><input id="${l.id}-sat" placeholder="Satuan" autocomplete="off" aria-label="Satuan baris ${i + 1}"></label>` +
-        `<span class="c-hint"></span>` +
-        `<span class="c-del"><button type="button" class="icon-btn" data-remove="${l.id}" aria-label="Hapus baris ${i + 1}">×</button></span>`;
-      list.appendChild(row);
-      row.querySelector("select").value = l.no ? String(l.no) : "";
+        `<div class="c-no" role="cell" id="${l.id}-no">${i + 1}</div>` +
+        `<div class="c-cell c-bahan" role="cell"><label class="mini" for="${l.id}-bahan">Bahan</label><select id="${l.id}-bahan" aria-labelledby="oh-bahan ${l.id}-no" aria-describedby="${l.id}-note">${OPTIONS_HTML}</select></div>` +
+        `<div class="c-cell c-qty" role="cell"><label class="mini" for="${l.id}-qty">Jumlah</label><input id="${l.id}-qty" class="num" inputmode="decimal" autocomplete="off" aria-labelledby="oh-qty ${l.id}-no"></div>` +
+        `<div class="c-cell c-sat" role="cell"><label class="mini" for="${l.id}-sat">Satuan</label><input id="${l.id}-sat" autocomplete="off" aria-labelledby="oh-sat ${l.id}-no"></div>` +
+        `<div class="c-note" role="cell" id="${l.id}-note"></div>` +
+        `<div class="c-act" role="cell"><button type="button" class="icon-btn is-remove" data-remove="${l.id}" aria-label="Hapus baris ${i + 1} dari order">${ICON.trash}</button></div>`;
+      body.appendChild(row);
+      $(`${l.id}-bahan`).value = l.no ? String(l.no) : "";
       $(`${l.id}-qty`).value = l.qty;
       $(`${l.id}-sat`).value = l.satuan;
     });
@@ -944,47 +1183,55 @@
     bahanList.forEach(b => updateStockRow(b.no));
   }
 
-  function updateOrderHints() {
+  function updateOrderNotes() {
     const counts = new Map();
     state.order.forEach(l => { if (l.no) counts.set(l.no, (counts.get(l.no) || 0) + 1); });
-    document.querySelectorAll(".orow").forEach(row => {
-      const l = state.order.find(x => x.id === row.dataset.id);
-      const hint = row.querySelector(".c-hint");
-      hint.className = "c-hint";
-      hint.textContent = "";
-      if (!l) return;
-      if (!l.no) {
-        if (parseNum(l.qty) > 0) { hint.textContent = "Pilih bahan dulu"; hint.classList.add("low"); }
-        return;
+    state.order.forEach(l => {
+      const note = $(`${l.id}-note`);
+      const sel = $(`${l.id}-bahan`);
+      if (!note) return;
+      let text = "", isError = false;
+      if (lineErrors[l.id]) { text = lineErrors[l.id]; isError = true; }
+      else if (l.no && counts.get(l.no) > 1) { text = "Bahan ini ada di dua baris."; isError = true; }
+      else if (l.no) {
+        const c = calc(l.no);
+        if (c.saran > 0) text = `Saran ${fmt(c.saran)} ${satuanOf(l.no)}`;
+        else if (c.saran === 0) text = "Stok masih cukup";
+        if (!(parseNum(l.qty) > 0)) text = text ? `${text} · belum ada jumlah` : "Belum ada jumlah";
       }
-      if (counts.get(l.no) > 1) { hint.textContent = "Bahan ini dobel"; hint.classList.add("low"); return; }
-      const c = calc(l.no);
-      if (c.saran > 0) hint.textContent = `Saran ${fmt(c.saran)} ${satuanOf(l.no)}`;
-      else if (c.saran === 0) hint.textContent = "Stok masih cukup";
-      if (!(parseNum(l.qty) > 0)) hint.textContent = hint.textContent ? `${hint.textContent} · isi jumlah` : "Isi jumlah";
+      note.textContent = text;
+      note.classList.toggle("is-error", isError);
+      if (lineErrors[l.id]) sel.setAttribute("aria-invalid", "true"); else sel.removeAttribute("aria-invalid");
     });
   }
 
+  function showMsg(id, text) { const el = $(id); el.textContent = text; el.hidden = !text; }
+
   function addLow() {
     let added = 0, filled = 0;
-    bahanList.forEach(b => {
+    lowList().forEach(b => {
       const c = calc(b.no);
-      if (!(c.saran > 0)) return;
       const line = state.order.find(l => l.no === b.no);
       if (!line) { state.order.push(newLine(b.no, c.saran)); added++; }
       else if (!(parseNum(line.qty) > 0)) { line.qty = fmt(c.saran); filled++; }
     });
     if (added + filled === 0) {
-      toast("Tidak ada bahan di bawah minimum. Isi Bar, Gudang, dan Min dulu di tab Stok.");
+      toast("Belum ada bahan yang kurang, jadi tidak ada yang ditambahkan. Isi Bar, Gudang, dan Min di langkah 1.");
       return false;
     }
+    showMsg("orderMsg", "");
     renderOrder(); refresh(); save();
     toast(`${added} bahan ditambahkan${filled ? `, ${filled} jumlah diisi` : ""} sesuai saran.`);
     return true;
   }
-  function addRow(no) {
-    state.order.push(newLine(no, no ? calc(no).saran : null));
+  function addRow() {
+    // bahan default: yang kurang dan belum ada di order
+    const ada = new Set(state.order.map(l => l.no));
+    const next = lowList().find(b => !ada.has(b.no));
+    state.order.push(newLine(next ? next.no : null, next ? calc(next.no).saran : null));
     renderOrder(); refresh(); save();
+    const last = state.order[state.order.length - 1];
+    $(`${last.id}-${last.no ? "qty" : "bahan"}`).focus();
   }
   function addAll() {
     const ada = new Set(state.order.map(l => l.no));
@@ -993,8 +1240,28 @@
     renderOrder(); refresh(); save();
     toast(added ? `${added} bahan ditambahkan. Baris tanpa jumlah tidak ikut dikirim.` : "Semua bahan sudah ada di order.");
   }
+  function validateOrder() {
+    lineErrors = {};
+    state.order.forEach(l => { if (!l.no && parseNum(l.qty) > 0) lineErrors[l.id] = "Pilih bahan untuk jumlah ini agar ikut terkirim."; });
+    updateOrderNotes();
+    const firstErr = state.order.find(l => lineErrors[l.id]);
+    if (firstErr) {
+      showMsg("orderMsg", "Ada jumlah yang belum punya bahan, jadi baris itu tidak bisa dikirim. Pilih bahannya di baris yang ditandai.");
+      keepLineErrorFocus = firstErr.id;
+      $(`${firstErr.id}-bahan`).focus();
+      return false;
+    }
+    if (!validItems().length) {
+      showMsg("orderMsg", "Belum ada bahan dengan jumlah, jadi belum ada yang bisa dikirim. Isi kolom Jumlah atau tambah bahan yang kurang.");
+      const firstQty = state.order.find(l => l.no);
+      (firstQty ? $(`${firstQty.id}-qty`) : $("btnAddLow")).focus();
+      return false;
+    }
+    showMsg("orderMsg", "");
+    return true;
+  }
 
-  // ---------- kirim ----------
+  // ---------- langkah 3: kirim ----------
   function buildMessage(items) {
     const lines = ["*ORDER BAHAN BAKU*", `Tanggal: ${fmtDate(state.tanggal)}`];
     if (state.pic.trim()) lines.push(`PIC: ${state.pic.trim()}`);
@@ -1007,7 +1274,7 @@
         lines.push("", "*STOK HARI INI* (Bar / Gudang)");
         counted.forEach(b => {
           const it = state.items[b.no];
-          lines.push(`- ${b.name} (${b.category}): ${fmtVal(it.bar)} / ${fmtVal(it.gudang)} ${satuanOf(b.no)}${calc(b.no).saran > 0 ? " (kurang)" : ""}`);
+          lines.push(`- ${label(b)}: ${fmtVal(it.bar)} / ${fmtVal(it.gudang)} ${satuanOf(b.no)}${calc(b.no).saran > 0 ? " (kurang)" : ""}`);
         });
       }
     }
@@ -1025,9 +1292,7 @@
     };
     return rows.map(r => r.map(cell).join(sep)).join("\n") + "\n";
   }
-  function header() {
-    return [state.tanggal || "-", state.pic.trim() || "-", state.area.trim() || "-"];
-  }
+  const header = () => [state.tanggal || "-", state.pic.trim() || "-", state.area.trim() || "-"];
   function buildOrderCsv(items) {
     const rows = [["No", "Tanggal", "PIC", "Area", "Nama Bahan", "Category", "Satuan", "Jumlah", "Stok Bar", "Stok Gudang", "Min"]];
     items.forEach((it, i) => {
@@ -1057,150 +1322,280 @@
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
-
-  function updateSend(items) {
-    const warn = [];
-    const ol = orderLines();
-    const noBahan = ol.filter(o => !o.bahan && o.qty > 0).length;
-    const noQty = ol.filter(o => o.bahan && !(o.qty > 0)).length;
-    if (noBahan) warn.push(`${noBahan} baris punya jumlah tapi belum pilih bahan, jadi tidak ikut dikirim.`);
-    if (noQty) warn.push(`${noQty} baris belum diisi jumlah dan tidak ikut dikirim.`);
-    if (!state.pic.trim()) warn.push("PIC belum diisi.");
-    $("sendWarn").hidden = warn.length === 0;
-    $("sendWarn").textContent = warn.join(" ");
-    $("orderWarn").hidden = noBahan === 0;
-    $("orderWarn").textContent = noBahan ? `${noBahan} baris punya jumlah tapi belum pilih bahan.` : "";
-    $("waDisplay").textContent = displayWa(state.settings.waNumber);
-
-    const link = $("waLink");
-    const empty = items.length === 0;
-    $("btnCopyMsg").disabled = empty;
-    $("btnCsvOrder").disabled = empty;
-    if (empty) {
-      $("msgPreview").textContent = "Belum ada bahan yang siap dikirim.\nPilih bahan dan isi jumlah (lebih dari 0) di tab Order.";
-      $("csvPreview").textContent = "";
-      link.removeAttribute("href");
-      link.setAttribute("aria-disabled", "true");
-      return;
-    }
-    const msg = buildMessage(items);
-    $("msgPreview").textContent = msg;
-    $("csvPreview").textContent = buildOrderCsv(items);
-    link.href = `https://wa.me/${state.settings.waNumber}?text=${encodeURIComponent(msg)}`;
-    link.removeAttribute("aria-disabled");
-  }
-
-  async function copyText(text, preEl, label) {
+  async function copyText(text, el) {
     try {
       await navigator.clipboard.writeText(text);
-      toast(`${label} disalin.`);
+      toast("Pesan disalin.");
     } catch (e) {
       const range = document.createRange();
-      range.selectNodeContents(preEl);
+      range.selectNodeContents(el);
       const sel = window.getSelection();
       sel.removeAllRanges();
       sel.addRange(range);
-      toast(`${label} sudah dipilih. Tekan Salin dari menu browser.`);
+      toast("Pesan belum tersalin otomatis. Teks sudah dipilih; tekan Salin dari menu browser.");
     }
   }
+
+  // Validasi kolom: muncul saat kolom ditinggalkan, hilang saat kolom difokus atau diubah
+  const FIELD_RULES = {
+    tanggal: { help: "", error: "Tanggal order dibutuhkan untuk pesan dan nama file. Pilih tanggal." },
+    pic: { help: "Diingat untuk hari berikutnya.", error: "Nama PIC dibutuhkan agar penerima tahu siapa yang mengirim. Isi nama PIC." },
+  };
+  function setFieldError(id, on) {
+    const input = $(id), help = $(`${id}Help`);
+    if (on) { input.setAttribute("aria-invalid", "true"); help.textContent = FIELD_RULES[id].error; help.classList.add("field-error"); help.classList.remove("help"); }
+    else { input.removeAttribute("aria-invalid"); help.textContent = FIELD_RULES[id].help; help.classList.remove("field-error"); help.classList.add("help"); }
+  }
+  const fieldValid = id => $(id).value.trim() !== "";
+  // fokus dari tombol Kirim tidak menghapus pesan; ketikan pertama yang menghapusnya
+  let keepErrorOnFocus = null;
+  Object.keys(FIELD_RULES).forEach(id => {
+    $(id).addEventListener("blur", () => setFieldError(id, !fieldValid(id)));
+    $(id).addEventListener("focus", () => {
+      if (keepErrorOnFocus === id) { keepErrorOnFocus = null; return; }
+      setFieldError(id, false);
+    });
+    $(id).addEventListener("input", () => setFieldError(id, false));
+  });
+
+  function checkSendable() {
+    const items = validItems();
+    if (!items.length) {
+      showMsg("sendMsg", "Belum ada bahan dengan jumlah, jadi belum ada yang bisa dikirim. Kembali ke langkah 2 untuk mengisi Jumlah.");
+      $("btnGoOrder").focus();
+      return null;
+    }
+    return items;
+  }
+  function send() {
+    const items = checkSendable();
+    if (!items) return;
+    const bad = Object.keys(FIELD_RULES).filter(id => !fieldValid(id));
+    bad.forEach(id => setFieldError(id, true));
+    if (bad.length) {
+      keepErrorOnFocus = bad[0];
+      $(bad[0]).scrollIntoView({ block: "center" });
+      $(bad[0]).focus();
+      return;
+    }
+    const url = `https://wa.me/${state.settings.waNumber}?text=${encodeURIComponent(buildMessage(items))}`;
+    const win = window.open(url, "_blank");
+    if (!win) {
+      showMsg("sendMsg", "WhatsApp tidak terbuka karena browser memblokir jendela baru. Izinkan pop-up untuk halaman ini, atau tekan Salin pesan lalu tempel di WhatsApp.");
+      return;
+    }
+    win.opener = null;
+    state.sentAt = Date.now();
+    showMsg("sendMsg", "");
+    refresh(); save();
+  }
+
+  // Edit nomor WhatsApp di tempat
+  function startWaEdit() {
+    $("waInput").value = displayWa(state.settings.waNumber);
+    $("waDisplay").hidden = true;
+    $("waInput").hidden = false;
+    $("waInput").focus();
+    $("waInput").select();
+  }
+  function endWaEdit(commit, refocus = true) {
+    const input = $("waInput");
+    if (input.hidden) return true;
+    if (commit) {
+      const num = normalizeWa(input.value);
+      if (!num) {
+        input.setAttribute("aria-invalid", "true");
+        $("waHelp").textContent = "Nomor WhatsApp perlu 10–13 angka agar pesan sampai. Tulis seperti 0812 3456 7890.";
+        $("waHelp").className = "field-error";
+        return false;
+      }
+      if (num !== state.settings.waNumber) {
+        state.settings.waNumber = num;
+        save();
+        toast(`Order akan dikirim ke ${displayWa(num)}.`);
+      }
+    }
+    input.removeAttribute("aria-invalid");
+    $("waHelp").textContent = "Ketuk untuk mengubah. Enter menyimpan, Esc membatalkan.";
+    $("waHelp").className = "help";
+    input.hidden = true;
+    $("waDisplay").hidden = false;
+    refresh();
+    if (refocus) $("waDisplay").focus();
+    return true;
+  }
+  $("waDisplay").addEventListener("click", startWaEdit);
+  $("waInput").addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); endWaEdit(true); }
+    else if (e.key === "Escape") { e.preventDefault(); endWaEdit(false); }
+  });
+  $("waInput").addEventListener("input", () => {
+    $("waInput").removeAttribute("aria-invalid");
+    $("waHelp").textContent = "Ketuk untuk mengubah. Enter menyimpan, Esc membatalkan.";
+    $("waHelp").className = "help";
+  });
+  // meninggalkan kolom menyimpan nomor yang valid; nomor tidak valid tetap terbuka dengan pesan
+  $("waInput").addEventListener("blur", () => { if (!$("waInput").hidden) endWaEdit(true, false); });
 
   // ---------- refresh tampilan turunan ----------
   function refresh() {
     const counted = bahanList.filter(b => calc(b.no).counted).length;
-    const low = bahanList.filter(b => calc(b.no).saran > 0).length;
+    const low = lowList().length;
     const items = validItems();
-    $("statCounted").textContent = `${counted}/${bahanList.length}`;
-    $("statLow").textContent = low;
-    $("statReady").textContent = items.length;
-    $("countStok").textContent = `${counted}/${bahanList.length}`;
-    $("countOrder").textContent = state.order.length || "";
-    $("countKirim").textContent = items.length || "";
+    $("metaStok").textContent = `${counted}/${bahanList.length} dihitung${low ? ` · ${low} kurang` : ""}`;
+    $("metaOrder").textContent = state.order.length ? `${state.order.length} baris` : "Belum ada baris";
+    $("metaKirim").textContent = items.length ? `${items.length} bahan siap` : "Belum siap";
+
     $("btnAddLowStock").textContent = low ? `Tambah ${low} yang kurang ke order` : "Tambah yang kurang ke order";
-    $("btnAddLow").textContent = low ? `Tambah ${low} yang kurang` : "Tambah yang kurang";
-    $("btnAddLowEmpty").textContent = $("btnAddLow").textContent;
-    $("orderMeta").textContent = `Order ${fmtDate(state.tanggal)}${state.pic.trim() ? ` · PIC ${state.pic.trim()}` : ""}`;
-    $("introBanner").hidden = !state.intro;
-    updateOrderHints();
-    updateSend(items);
+    const addLowText = low ? `Tambah ${low} yang kurang` : "Tambah yang kurang";
+    $("btnAddLow").textContent = addLowText;
+    $("btnAddLowEmpty").textContent = addLowText;
+    $("orderDesc").textContent = `Order untuk ${fmtDate(state.tanggal)}. Baris tanpa jumlah tidak ikut dikirim.`;
+
+    $("waText").textContent = displayWa(state.settings.waNumber);
+    $("waDisplay").setAttribute("aria-label", `Ubah nomor WhatsApp ${displayWa(state.settings.waNumber)}`);
+
+    const empty = items.length === 0;
+    $("msgPreview").hidden = empty;
+    $("previewEmpty").hidden = !empty;
+    if (!empty) $("msgPreview").textContent = buildMessage(items);
+    if (!empty) showMsg("sendMsg", "");
+    $("sentNote").hidden = !state.sentAt;
+    if (state.sentAt) $("sentNote").textContent = `WhatsApp dibuka pukul ${fmtTime(state.sentAt)}. Setelah pesan terkirim, tekan Mulai hari baru untuk mengosongkan hitungan.`;
+
+    updateOrderNotes();
+    updateBar(counted, low, items.length);
   }
 
-  // ---------- tab ----------
-  const TABS = ["stok", "order", "kirim"];
-  function showTab(tab) {
-    state.tab = tab;
-    document.querySelectorAll(".tab").forEach(t => {
-      const on = t.dataset.tab === tab;
-      t.setAttribute("aria-selected", on);
-      t.tabIndex = on ? 0 : -1;
+  // ---------- navigasi langkah ----------
+  const BAR = {
+    stok: { back: null, next: "Susun order" },
+    order: { back: "Kembali ke stok", next: "Tinjau & kirim" },
+    kirim: { back: "Kembali ke order", next: "Kirim lewat WhatsApp" },
+  };
+  function updateBar(counted, low, ready) {
+    const cfg = BAR[state.step];
+    $("btnBack").hidden = !cfg.back;
+    $("btnBack").textContent = cfg.back || "";
+    $("btnNext").textContent = cfg.next;
+    $("barStatus").textContent = state.step === "stok"
+      ? `${counted}/${bahanList.length} dihitung · ${low} kurang`
+      : `${ready} bahan siap dikirim`;
+  }
+  function showStep(step, { push = true, focus = true } = {}) {
+    state.step = step;
+    document.querySelectorAll(".step").forEach(b => {
+      if (b.dataset.step === step) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current");
     });
-    TABS.forEach(p => { $(`panel-${p}`).hidden = p !== tab; });
+    STEPS.forEach(s => { $(`panel-${s}`).hidden = s !== step; });
+    if (push && location.hash !== `#${step}`) history.pushState({ step }, "", `#${step}`);
+    hideTip();
+    refresh(); save();
+    if (focus) { window.scrollTo(0, 0); $(`h-${step}`).focus({ preventScroll: true }); }
   }
-
-  function syncHeader() {
-    $("tanggal").value = state.tanggal;
-    $("pic").value = state.pic;
-    $("area").value = state.area;
-    $("includeStock").checked = !!state.includeStock;
-    $("csvSep").value = state.settings.csvSep;
-  }
+  window.addEventListener("popstate", e => {
+    const s = (e.state && e.state.step) || location.hash.slice(1);
+    showStep(STEPS.includes(s) ? s : "stok", { push: false });
+  });
+  document.querySelector(".steps").addEventListener("click", e => {
+    const b = e.target.closest(".step");
+    if (b) showStep(b.dataset.step);
+  });
+  $("btnBack").addEventListener("click", () => showStep(STEPS[STEPS.indexOf(state.step) - 1]));
+  $("btnNext").addEventListener("click", () => {
+    if (state.step === "stok") showStep("order");
+    else if (state.step === "order") { if (validateOrder()) showStep("kirim"); }
+    else send();
+  });
 
   // ---------- event ----------
-  $("tanggal").addEventListener("input", e => { state.tanggal = e.target.value; refresh(); save(); });
-  $("pic").addEventListener("input", e => { state.pic = e.target.value; refresh(); save(); });
-  $("area").addEventListener("input", e => { state.area = e.target.value; refresh(); save(); });
-
-  $("btnNewDay").addEventListener("click", () => { $("confirmNewDay").hidden = false; $("btnNewDayYes").focus(); });
-  $("btnNewDayNo").addEventListener("click", () => { $("confirmNewDay").hidden = true; });
-  $("btnNewDayYes").addEventListener("click", () => {
+  $("btnNewDay").addEventListener("click", async () => {
+    const counted = bahanList.filter(b => calc(b.no).counted).length;
+    const lines = state.order.length;
+    if (counted + lines > 0) {
+      const ok = await confirmAction({
+        title: `Hapus hitungan dan order ${fmtDateShort(state.tanggal)}?`,
+        body: `${counted} hitungan stok dan ${lines} baris order akan dihapus. Min, satuan, PIC, nomor WhatsApp, dan format CSV tetap tersimpan. Ini tidak bisa dibatalkan.`,
+        confirmLabel: "Hapus dan mulai hari baru",
+      });
+      if (!ok) return;
+    }
     bahanList.forEach(b => { state.items[b.no].bar = ""; state.items[b.no].gudang = ""; });
-    Object.assign(state, { tanggal: todayLocal(), pic: "", area: "", order: [] });
-    $("confirmNewDay").hidden = true;
-    syncHeader(); renderStock(); renderOrder(); applyFilter(); refresh(); save();
-    showTab("stok");
-    toast("Hari baru dimulai. Stok minimum dan satuan tetap tersimpan.");
+    Object.assign(state, { tanggal: todayLocal(), area: "", order: [], sentAt: null });
+    lineErrors = {};
+    syncFields(); renderStock(); renderOrder(); applyFilter();
+    showStep("stok");
+    toast(`Hari baru dimulai untuk ${fmtDateShort(state.tanggal)}.`);
   });
-  $("btnIntroClose").addEventListener("click", () => { state.intro = false; refresh(); save(); });
 
   $("search").addEventListener("input", e => { filter.q = e.target.value; applyFilter(); });
-  $("catChips").addEventListener("click", e => {
-    const chip = e.target.closest("[data-cat]");
-    if (!chip) return;
-    filter.cat = chip.dataset.cat;
-    renderChips(); applyFilter();
+  $("filter").addEventListener("change", e => { filter.by = e.target.value; applyFilter(); });
+  $("btnClearFilter").addEventListener("click", () => {
+    filter.q = ""; filter.by = "ALL";
+    $("search").value = ""; $("filter").value = "ALL";
+    applyFilter();
+    $("search").focus();
   });
 
-  $("stockList").addEventListener("input", e => {
+  $("stockBody").addEventListener("input", e => {
     const m = /^(bar|gudang|min|satuan)-(\d+)$/.exec(e.target.id);
     if (!m) return;
     const no = Number(m[2]);
-    state.items[no][m[1]] = e.target.value;
+    if (m[1] !== "satuan") {
+      const v = cleanNum(e.target.value);
+      if (v !== e.target.value) e.target.value = v;
+      state.items[no][m[1]] = v;
+    } else {
+      const v = e.target.value.trim();
+      state.items[no].satuan = v === BY_NO.get(no).satuan ? "" : v;
+    }
     updateStockRow(no);
     refresh(); save();
   });
-  $("stockList").addEventListener("click", e => {
-    const btn = e.target.closest("[data-add]");
-    if (!btn || btn.disabled) return;
-    const no = Number(btn.dataset.add);
-    addRow(no);
-    toast(`${BY_NO.get(no).name} (${BY_NO.get(no).category}) ditambahkan ke order.`);
+  $("stockBody").addEventListener("focusout", e => {
+    const m = /^satuan-(\d+)$/.exec(e.target.id);
+    if (m && !e.target.value.trim()) e.target.value = BY_NO.get(Number(m[1])).satuan;
+  });
+  $("stockBody").addEventListener("click", e => {
+    const btn = e.target.closest(".icon-btn[data-no]");
+    if (!btn) return;
+    const no = Number(btn.dataset.no);
+    const b = BY_NO.get(no);
+    const line = state.order.find(l => l.no === no);
+    if (line) {
+      showStep("order", { focus: false });
+      window.scrollTo(0, 0);
+      $(`${line.id}-qty`).focus();
+      return;
+    }
+    state.order.push(newLine(no, calc(no).saran));
+    renderOrder(); refresh(); save();
+    btn.focus();
+    toast(`${label(b)} ditambahkan ke order.`);
   });
 
-  $("btnAddLowStock").addEventListener("click", () => { if (addLow()) { showTab("order"); save(); } });
+  $("btnAddLowStock").addEventListener("click", () => { if (addLow()) showStep("order"); });
   $("btnAddLow").addEventListener("click", addLow);
   $("btnAddLowEmpty").addEventListener("click", addLow);
-  $("btnAddRow").addEventListener("click", () => addRow(null));
-  $("btnAddRowEmpty").addEventListener("click", () => addRow(null));
+  $("btnAddRow").addEventListener("click", addRow);
+  $("btnAddRowEmpty").addEventListener("click", addRow);
   $("btnAddAll").addEventListener("click", addAll);
-  $("btnClearOrder").addEventListener("click", () => { if (state.order.length) $("confirmClear").hidden = false; });
-  $("btnClearNo").addEventListener("click", () => { $("confirmClear").hidden = true; });
-  $("btnClearYes").addEventListener("click", () => {
-    state.order = [];
-    $("confirmClear").hidden = true;
+  $("btnClearOrder").addEventListener("click", async () => {
+    if (!state.order.length) { toast("Order sudah kosong."); return; }
+    const ok = await confirmAction({
+      title: `Kosongkan order ${fmtDateShort(state.tanggal)} (${state.order.length} baris)?`,
+      body: "Semua baris order dihapus. Hitungan stok di langkah 1 tidak berubah.",
+      confirmLabel: "Kosongkan order",
+    });
+    if (!ok) return;
+    state.order = []; lineErrors = {};
+    showMsg("orderMsg", "");
     renderOrder(); refresh(); save();
+    $("btnAddLow").focus();
     toast("Order dikosongkan.");
   });
 
-  $("orderList").addEventListener("change", e => {
+  $("orderBody").addEventListener("change", e => {
     if (e.target.tagName !== "SELECT") return;
     const l = state.order.find(x => `${x.id}-bahan` === e.target.id);
     if (!l) return;
@@ -1211,81 +1606,94 @@
       l.qty = fmt(calc(l.no).saran);
       $(`${l.id}-qty`).value = l.qty;
     }
+    delete lineErrors[l.id];
     bahanList.forEach(b => updateStockRow(b.no));
     refresh(); save();
   });
-  $("orderList").addEventListener("input", e => {
+  // fokus dari tombol Lanjut tidak menghapus tanda error; fokus oleh pengguna menghapusnya
+  $("orderBody").addEventListener("focusin", e => {
+    const m = /^(o\d+)-bahan$/.exec(e.target.id);
+    if (!m || !lineErrors[m[1]]) return;
+    if (keepLineErrorFocus === m[1]) { keepLineErrorFocus = null; return; }
+    delete lineErrors[m[1]];
+    updateOrderNotes();
+  });
+  $("orderBody").addEventListener("input", e => {
     const m = /^(o\d+)-(qty|sat)$/.exec(e.target.id);
     if (!m) return;
     const l = state.order.find(x => x.id === m[1]);
     if (!l) return;
-    if (m[2] === "qty") l.qty = e.target.value; else l.satuan = e.target.value;
+    if (m[2] === "qty") {
+      const v = cleanNum(e.target.value);
+      if (v !== e.target.value) e.target.value = v;
+      l.qty = v;
+      if (!$("orderMsg").hidden) showMsg("orderMsg", "");
+    } else l.satuan = e.target.value;
     refresh(); save();
   });
-  $("orderList").addEventListener("click", e => {
+  $("orderBody").addEventListener("click", async e => {
     const btn = e.target.closest("[data-remove]");
     if (!btn) return;
-    state.order = state.order.filter(l => l.id !== btn.dataset.remove);
-    renderOrder(); refresh(); save();
-  });
-
-  $("includeStock").addEventListener("change", e => { state.includeStock = e.target.checked; refresh(); save(); });
-  $("waLink").addEventListener("click", e => { if (e.currentTarget.getAttribute("aria-disabled") === "true") e.preventDefault(); });
-  $("btnCopyMsg").addEventListener("click", () => copyText($("msgPreview").textContent, $("msgPreview"), "Pesan"));
-
-  $("btnWaEdit").addEventListener("click", () => {
-    $("waView").hidden = true;
-    $("waForm").hidden = false;
-    $("waInput").value = displayWa(state.settings.waNumber);
-    $("waInput").focus();
-  });
-  $("btnWaCancel").addEventListener("click", () => {
-    $("waForm").hidden = true; $("waView").hidden = false; $("waError").hidden = true;
-  });
-  $("waForm").addEventListener("submit", e => {
-    e.preventDefault();
-    const num = normalizeWa($("waInput").value);
-    if (!num) {
-      $("waError").textContent = "Nomor tidak valid. Tulis nomor WhatsApp Indonesia, mis. 0812 3456 7890.";
-      $("waError").hidden = false;
-      return;
+    const idx = state.order.findIndex(l => l.id === btn.dataset.remove);
+    const l = state.order[idx];
+    if (!l) return;
+    if (l.no || parseNum(l.qty) > 0) {
+      const what = l.no ? label(BY_NO.get(l.no)) : `baris ${idx + 1}`;
+      const ok = await confirmAction({
+        title: `Hapus ${what} dari order?`,
+        body: `Jumlah ${parseNum(l.qty) > 0 ? `${fmt(parseNum(l.qty))} ${l.satuan}`.trim() : "yang kosong"} ikut terhapus. Bahan bisa ditambahkan lagi kapan saja.`,
+        confirmLabel: "Hapus dari order",
+      });
+      if (!ok) return;
     }
-    state.settings.waNumber = num;
-    $("waForm").hidden = true; $("waView").hidden = false; $("waError").hidden = true;
-    refresh(); save();
-    toast(`Order akan dikirim ke ${displayWa(num)}.`);
+    state.order.splice(idx, 1);
+    delete lineErrors[l.id];
+    renderOrder(); refresh(); save();
+    const next = state.order[Math.min(idx, state.order.length - 1)];
+    if (next) $(`${next.id}-bahan`).focus(); else $("btnAddLow").focus();
   });
 
-  $("csvSep").addEventListener("change", e => { state.settings.csvSep = e.target.value; refresh(); save(); });
+  $("tanggal").addEventListener("input", e => { state.tanggal = e.target.value; refresh(); save(); });
+  $("pic").addEventListener("input", e => { state.pic = e.target.value; refresh(); save(); });
+  $("area").addEventListener("input", e => { state.area = e.target.value; refresh(); save(); });
+  $("includeStock").addEventListener("change", e => { state.includeStock = e.target.checked; refresh(); save(); });
+  $("csvSep").addEventListener("change", e => { state.settings.csvSep = e.target.value; save(); });
+  $("btnGoOrder").addEventListener("click", () => showStep("order"));
+  $("btnCopyMsg").addEventListener("click", () => { if (checkSendable()) copyText($("msgPreview").textContent, $("msgPreview")); });
   $("btnCsvOrder").addEventListener("click", () => {
-    const items = validItems();
-    if (!items.length) return;
-    download(buildOrderCsv(items), `order_bahan_baku_${state.tanggal || todayLocal()}.csv`);
+    const items = checkSendable();
+    if (items) download(buildOrderCsv(items), `order_bahan_baku_${state.tanggal || todayLocal()}.csv`);
   });
-  $("btnCsvStock").addEventListener("click", () => {
-    download(buildStockCsv(), `stok_bahan_baku_${state.tanggal || todayLocal()}.csv`);
+  $("btnCsvStock").addEventListener("click", () => download(buildStockCsv(), `stok_bahan_baku_${state.tanggal || todayLocal()}.csv`));
+
+  // "/" memfokuskan pencarian bahan
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && tipFor) hideTip();
+    if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
+    const t = e.target;
+    if (t.closest("input, textarea, select, [contenteditable]") || dlg.open) return;
+    e.preventDefault();
+    if (state.step !== "stok") showStep("stok", { focus: false });
+    $("search").focus();
   });
 
-  document.querySelector(".tabs").addEventListener("click", e => {
-    const t = e.target.closest(".tab");
-    if (!t) return;
-    showTab(t.dataset.tab); save();
-  });
-  document.querySelector(".tabs").addEventListener("keydown", e => {
-    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-    const next = TABS[(TABS.indexOf(state.tab) + (e.key === "ArrowRight" ? 1 : 2)) % 3];
-    showTab(next); $(`tab-${next}`).focus(); save();
-  });
+  function syncFields() {
+    $("tanggal").value = state.tanggal;
+    $("pic").value = state.pic;
+    $("area").value = state.area;
+    $("includeStock").checked = !!state.includeStock;
+    $("csvSep").value = state.settings.csvSep;
+  }
 
   // ---------- mulai ----------
-  syncHeader();
-  renderChips();
+  syncFields();
   renderStock();
   renderOrder();
   applyFilter();
-  refresh();
-  const hashTab = (location.hash || "").slice(1);
-  showTab(TABS.includes(hashTab) ? hashTab : (state.tab || "stok"));
+  const hashStep = location.hash.slice(1);
+  const startStep = STEPS.includes(hashStep) ? hashStep : state.step;
+  history.replaceState({ step: startStep }, "", `#${startStep}`);
+  showStep(startStep, { push: false, focus: false });
 </script>
 
 </body>
